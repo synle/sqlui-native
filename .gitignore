@@ -59,7 +59,7 @@ e2e-test-*.sqlite
 # Caches
 .cache
 .parcel-cache
-.prettier-cache
+.oxfmt-cache
 
 # Logs
 npm-debug.log*

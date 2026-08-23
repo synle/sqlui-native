@@ -20,7 +20,7 @@ npm run build:portal    # Build frontend + portal bundle → dist/portal/ (sqlui
 npm test                # Run Vitest tests (watch mode)
 npm run test-ci         # Run Vitest tests (CI, no watch)
 npm run lint            # ESLint with auto-fix
-npm run format          # Prettier formatting
+npm run format          # oxfmt formatting
 npm run typecheck       # TypeScript type check (tsc --noEmit)
 npm run validate        # All checks: lint → typecheck → test-ci → format → e2e → smoke → integration
 ```
@@ -208,7 +208,7 @@ After any build-related or Vite config change, run the affected build task:
 - Server: Vite SSR (`vite.sqlui-server.config.ts`) — `build/sqlui-server.js`
 - Portal bundle: Vite SSR (`vite.sqlui-portal.config.ts`) — `dist/portal/sqlui-portal.js`
 - Vitest: `vitest.config.ts` (unit) + `vitest.integration.config.ts` (integration)
-- Prettier: 140 char width, single quotes, trailing commas, 2-space indent
+- oxfmt: 140 char width (`printWidth`), 2-space indent (`.oxfmtrc.json`)
 - NODE_VERSION: 24 (use `fnm` to switch: `fnm use 24`)
 
 ## Code Coverage Thresholds

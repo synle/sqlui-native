@@ -8,10 +8,6 @@
 - npm (bundled with Node)
 - Docker (for integration tests)
 
-### Starting guide
-
-- Refer to this Linkedin POST for the basic overview of this project.
-
 ### Sample Import Files
 
 Assuming you use the same database in the docker samples below:
@@ -189,22 +185,11 @@ The repo includes `.vscode/launch.json` and `.vscode/tasks.json` with pre-config
 
 ### How to run locally?
 
-#### In Tauri dev mode
-
 ```bash
 npm install
-npm start
-```
 
-#### In browser mode (dev server)
-
-Run this and test it in the browser
-
-```bash
-npm install
-npm run dev
-# then open a browser with URL
-# http://localhost:3000
+npm start       # Tauri dev mode
+npm run dev     # Browser mode — http://localhost:3000
 ```
 
 ### Tauri Sidecar Lifecycle
@@ -514,7 +499,7 @@ npm run lint                                # check for lint errors (must have 0
 npm run typecheck                           # TypeScript type check (must have 0 errors)
 npm run test-ci                             # run unit tests (all tests must pass)
 npx vitest run --coverage.enabled           # confirm coverage stays above the thresholds in vitest.config.ts
-npm run format                              # Prettier formatting (always run LAST)
+npm run format                              # oxfmt formatting (always run LAST)
 npm start                                   # test in Tauri dev mode -- try adding a connection with your dialect
 ```
 
@@ -594,278 +579,55 @@ CREATE TABLE artists(
 
 ### Salesforce (SFDC)
 
-#### Creating a Free Salesforce Developer Org
+Connection string format, OAuth2 flows, and sample queries live in the [README](README.md#salesforce-sfdc-limitations). Dev-specific notes:
 
-1. Go to [https://developer.salesforce.com/signup](https://developer.salesforce.com/signup).
-2. Fill in the form with your name, email, and a username (must be in email format, e.g. `you@yourcompany.dev` -- it does not need to be a real email).
-3. Check your email for the verification link and set your password.
-4. You now have a free Developer Edition org with full API access. This org does not expire (just log in occasionally to keep it active).
+#### Free Developer Org
 
-You can also use a **Trailhead Playground** (free orgs from [trailhead.salesforce.com](https://trailhead.salesforce.com)) -- these also have full API access.
+1. Sign up at <https://developer.salesforce.com/signup> — username must be email-format (e.g. `you@yourcompany.dev`, need not be a real inbox).
+2. Verify via email and set the password.
+3. Security token: **Settings > My Personal Information > Reset My Security Token** (emailed to you). Omit it if your IP is whitelisted or the option is missing.
 
-#### Getting Your Security Token
-
-Salesforce requires a security token for API access (unless your IP is whitelisted):
-
-1. Log in to your Salesforce org at [https://login.salesforce.com](https://login.salesforce.com).
-2. Click your avatar (top right) > **Settings**.
-3. In the left sidebar, go to **My Personal Information** > **Reset My Security Token**.
-4. Click **Reset Security Token**. A new token will be emailed to you.
-
-If you don't see the "Reset My Security Token" option, your org may have IP restrictions disabled, and you can leave the security token empty.
+A Trailhead Playground (<https://trailhead.salesforce.com>) also works.
 
 #### Enabling SOAP API Login
 
-Newer Salesforce orgs (Spring '25+) have SOAP API login disabled by default. sqlui-native uses SOAP API to authenticate, so you must enable it:
+Newer orgs (Spring '25+) disable SOAP API login by default; sqlui-native authenticates over SOAP:
 
-1. Log in to your Salesforce org and go to **Setup** (gear icon > Setup).
-2. In the **Quick Find** box, search for **"Profiles"**.
-3. Click on your user's profile (e.g., **"System Administrator"**).
-4. Click **Edit** (or for Enhanced Profile view, look under **Administrative Permissions**).
-5. Check **"SOAP API Login Allowed"** (or **"API Enabled"** if that's what you see).
-6. Click **Save**.
+1. **Setup** > Quick Find > **Profiles** > your profile (e.g. System Administrator)
+2. Edit > check **SOAP API Login Allowed** (or **API Enabled**) > Save
+3. Not there? Check your assigned **Permission Set**, then **Session Settings**.
 
-If you can't find the setting under Profiles, try:
+Alternative: create a Connected App (**App Manager** > New Connected App, enable OAuth, scope `Full access`) and put its `clientId`/`clientSecret` in the connection string instead of username/password/token.
 
-- Search **"Permission Sets"** in Setup, find your assigned permission set, and enable **"SOAP API Login Allowed"** there.
-- Search **"Session Settings"** and check if there's an API login restriction.
+The Lightning UI URL (`orgfarm-xxx.develop.lightning.force.com`) is not the API login URL — use `login.salesforce.com` (prod/dev) or `test.salesforce.com` (sandbox).
 
-**Alternative: Use a Connected App (OAuth2)**
+#### Troubleshooting
 
-If you cannot enable SOAP API login, you can create a Connected App and use OAuth2 instead:
-
-1. In Setup, search for **"App Manager"** > **New Connected App**.
-2. Fill in the basic info (name, email).
-3. Under **API (Enable OAuth Settings)**, check **Enable OAuth Settings**.
-4. Set callback URL to `https://login.salesforce.com/services/oauth2/callback`.
-5. Add **"Full access (full)"** to Selected OAuth Scopes.
-6. Save and wait a few minutes for it to activate.
-7. Copy the **Consumer Key** (Client ID) and **Consumer Secret** (Client Secret).
-8. Add them to your connection string. Two options:
-
-**With username/password (OAuth2 Username-Password flow):**
-
-```
-sfdc://{"username":"you@yourcompany.dev","password":"your_password","securityToken":"your_token","clientId":"your_consumer_key","clientSecret":"your_consumer_secret"}
-```
-
-**Without username/password (OAuth2 Client Credentials flow):**
-
-```
-sfdc://{"clientId":"your_consumer_key","clientSecret":"your_consumer_secret","loginUrl":"your-org.my.salesforce.com"}
-```
-
-The Client Credentials flow is useful for service-to-service integrations where no user credentials are available. The adapter uses Node's native `https` module for the OAuth2 token request (instead of jsforce's internal HTTP client, which hangs in bundled sidecar builds). Sessions are automatically refreshed via `withAutoRefresh()` when `INVALID_SESSION_ID` or `Session expired` errors are detected.
-
-#### Connection String Format
-
-The connection string uses JSON to avoid URL encoding issues with special characters in passwords:
-
-```
-sfdc://{"username":"you@yourcompany.dev","password":"your_password","securityToken":"your_token","loginUrl":"login.salesforce.com"}
-```
-
-- **username** -- Your Salesforce username (e.g. `you@yourcompany.dev`)
-- **password** -- Your Salesforce password (no encoding needed, supports any special characters)
-- **securityToken** -- The token from the email (can be omitted if IP whitelisted)
-- **loginUrl** -- Defaults to `login.salesforce.com`. Use `test.salesforce.com` for sandbox orgs
-
-Example with real credentials:
-
-```
-sfdc://{"username":"you@yourcompany.dev","password":"MyP@ss!123","securityToken":"ABCDEF","loginUrl":"login.salesforce.com"}
-```
-
-Without security token:
-
-```
-sfdc://{"username":"you@yourcompany.dev","password":"MyP@ss!123"}
-```
-
-**Note:** The Login URL from the Salesforce Lightning UI (e.g. `orgfarm-xxx.develop.lightning.force.com`) is **not** the API login URL. Always use `login.salesforce.com` for production/developer orgs or `test.salesforce.com` for sandbox orgs.
-
-#### Connection Form
-
-When using the UI connection helper, select `sfdc` as the scheme and paste the JSON into the connection string field:
-
-```json
-{
-  "username": "you@yourcompany.dev",
-  "password": "your_password",
-  "securityToken": "your_token",
-  "loginUrl": "login.salesforce.com"
-}
-```
-
-The `loginUrl` field defaults to `login.salesforce.com` if omitted.
-
-#### Troubleshooting Connection Issues
-
-- **"INVALID_LOGIN" error** -- Most commonly caused by a missing security token. Reset it and add it to the `securityToken` field.
-- **"LOGIN_MUST_USE_SECURITY_TOKEN" error** -- Your IP is not whitelisted. You must provide a security token.
-- **"INVALID_LOGIN" with correct credentials** -- Check that your username is the Salesforce username (email format), not your actual email address. These can be different.
-- **Timeout errors** -- Your org's login URL may be wrong. Verify you're using `login.salesforce.com` (not a custom domain).
-- **JSON parse error** -- Make sure your connection string starts with `sfdc://` followed by valid JSON. Special characters in passwords are fine inside JSON strings.
+- `INVALID_LOGIN` — usually a missing security token
+- `LOGIN_MUST_USE_SECURITY_TOKEN` — IP not whitelisted; token required
+- Correct credentials but `INVALID_LOGIN` — use the Salesforce username, not your personal email
+- Timeout — wrong loginUrl
+- JSON parse error — string must start with `sfdc://` followed by valid JSON
 
 #### Concept Mapping
 
-| SQL Concept | Salesforce Concept | Example                           |
-| ----------- | ------------------ | --------------------------------- |
-| Database    | Org                | One org per connection            |
-| Table       | SObject            | Account, Contact, Lead, etc.      |
-| Column      | Field              | Name, Email, Phone, etc.          |
-| Row         | Record             | A single Account or Contact       |
-| Primary Key | Id                 | 18-character Salesforce record ID |
+| SQL Concept | Salesforce Concept | Example                |
+| ----------- | ------------------ | ---------------------- |
+| Database    | Org                | One org per connection |
+| Table       | SObject            | Account, Contact, Lead |
+| Column      | Field              | Name, Email, Phone     |
+| Row         | Record             | A single Account       |
+| Primary Key | Id                 | 18-character record ID |
 
 #### Query Modes
 
-The Salesforce adapter supports three query modes in the editor:
+| Prefix   | Mode            | Use for                                                                                                                                   |
+| -------- | --------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| `SELECT` | SOQL (read)     | Single-object SQL-like query: `SELECT Id, Name FROM Account LIMIT 10`                                                                     |
+| `FIND`   | SOSL (search)   | Full-text search across objects: `FIND {Acme} IN ALL FIELDS RETURNING Account(Id, Name)`                                                  |
+| `conn.`  | JS API (mutate) | `conn.sobject("Account").create(...)`, `.update()`, `.destroy()`, `.upsert(...)`, `.describe()`, plus `conn.identity()` / `conn.limits()` |
 
-**1. SOQL (Salesforce Object Query Language)** -- for reading data
-
-Queries starting with `SELECT` are executed as SOQL:
-
-```sql
-SELECT Id, Name FROM Account LIMIT 10
-```
-
-**2. SOSL (Salesforce Object Search Language)** -- for searching across objects
-
-Queries starting with `FIND` are executed as SOSL:
-
-```sql
-FIND {keyword} IN ALL FIELDS RETURNING Account(Id, Name), Contact(Id, Name, Email) LIMIT 20
-```
-
-**3. JS API (conn.sobject)** -- for mutations and metadata
-
-Queries containing `conn.` are executed as JavaScript for create, update, delete, upsert, and describe operations:
-
-```js
-// Insert
-conn.sobject("Account").create({ Name: "Acme Corp", Industry: "Technology" });
-
-// Update (requires Id)
-conn.sobject("Account").update({ Id: "001xxx", Name: "Updated Name" });
-
-// Delete
-conn.sobject("Account").destroy("001xxx");
-
-// Upsert (using external ID field)
-conn.sobject("Account").upsert({ External_Id__c: "EXT-001", Name: "Upserted Account" }, "External_Id__c");
-
-// Describe object metadata
-conn.sobject("Account").describe();
-
-// Org identity
-conn.identity();
-
-// Org API limits
-conn.limits();
-```
-
-#### SOQL vs SOSL
-
-**SOQL (Salesforce Object Query Language)**
-
-- Queries a **single object** (with optional related objects via relationships)
-- Similar to SQL `SELECT` -- you specify fields, object, and filters
-- Returns records from a **known object**
-- Example: `SELECT Name, Email FROM Contact WHERE LastName = 'Smith'`
-
-**SOSL (Salesforce Object Search Language)**
-
-- Searches across **multiple objects simultaneously**
-- Uses a full-text search index (like a search engine)
-- Returns records grouped by object type
-- Example: `FIND {Smith} IN ALL FIELDS RETURNING Contact(Name, Email), Account(Name)`
-
-**Key Differences**
-
-|                 | SOQL                                 | SOSL                                             |
-| --------------- | ------------------------------------ | ------------------------------------------------ |
-| **Scope**       | Single object (+ relationships)      | Multiple objects at once                         |
-| **Search type** | Field-level filtering (`WHERE`)      | Full-text search (`FIND`)                        |
-| **Use when**    | You know which object/field to query | You need to search across objects                |
-| **Results**     | Flat list of records                 | List of lists (grouped by object)                |
-| **DML**         | Can be used in DML context           | Read-only                                        |
-| **Index**       | Uses database indexes                | Uses search index (slight delay for new records) |
-| **Wildcards**   | `LIKE '%value%'`                     | `FIND {value*}` (more flexible)                  |
-
-**When to use which**
-
-- **SOQL**: Retrieving specific records from a known object with precise filters (e.g., "get all Contacts where Status = Active")
-- **SOSL**: Searching for a term across multiple objects (e.g., "find 'Acme' in Contacts, Accounts, and Opportunities")
-- **JS API**: Creating, updating, or deleting records; describing object metadata; checking org limits
-
-#### Sample SOQL Queries
-
-```sql
--- List all accounts
-SELECT Id, Name, Industry, Phone FROM Account LIMIT 10
-
--- Search contacts by name
-SELECT Id, Name, Email FROM Contact WHERE Name LIKE '%John%' LIMIT 10
-
--- Count leads by status
-SELECT Status, COUNT(Id) cnt FROM Lead GROUP BY Status
-
--- Recent opportunities
-SELECT Id, Name, Amount, StageName, CloseDate FROM Opportunity ORDER BY CreatedDate DESC LIMIT 10
-
--- Describe an object's fields
-SELECT QualifiedApiName, DataType, Label FROM FieldDefinition WHERE EntityDefinition.QualifiedApiName = 'Account' LIMIT 200
-
--- Records from the last 7 days
-SELECT Id, Name, CreatedDate FROM Account WHERE CreatedDate = LAST_N_DAYS:7 LIMIT 20
-
--- Subquery with child records
-SELECT Id, Name, (SELECT Id, Name FROM Contacts) FROM Account LIMIT 10
-
--- Lookup a specific record by Id
-SELECT Id, Name, Amount, StageName FROM Opportunity WHERE Id = '006dM00000LIlagQAD'
-```
-
-#### Sample SOSL Queries
-
-```sql
--- Search across multiple objects
-FIND {Acme} IN ALL FIELDS RETURNING Account(Id, Name), Contact(Id, Name, Email) LIMIT 20
-
--- Search in name fields only
-FIND {John} IN NAME FIELDS RETURNING Contact(Id, Name, Email), Lead(Id, Name) LIMIT 10
-
--- Search with wildcards
-FIND {Acme*} IN ALL FIELDS RETURNING Account(Id, Name, Industry) LIMIT 20
-```
-
-#### Sample JS API (Mutations)
-
-```js
-// Insert a new account
-conn.sobject("Account").create({ Name: "New Account", Industry: "Technology", Phone: "555-0100" });
-
-// Update an existing contact
-conn.sobject("Contact").update({ Id: "003xxx", Email: "newemail@example.com", Phone: "555-0200" });
-
-// Delete a record
-conn.sobject("Lead").destroy("00Qxxx");
-
-// Bulk insert multiple records
-conn.sobject("Contact").create([
-  { LastName: "Smith", Email: "smith@example.com" },
-  { LastName: "Jones", Email: "jones@example.com" },
-]);
-
-// Describe an object's fields
-conn.sobject("Account").describe();
-
-// Get org identity info
-conn.identity();
-
-// Check API usage limits
-conn.limits();
-```
+SOQL returns flat records from a known object; SOSL returns results grouped per object with a slight search-index delay.
 
 ## CI / CD Notes
 

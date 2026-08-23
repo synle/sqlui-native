@@ -4,7 +4,7 @@
 
 ![64](https://user-images.githubusercontent.com/3792401/160178384-638de88f-1712-4419-aed4-b1ef79e5d82a.png)
 
-`sqlui-native` is a cross-platform desktop SQL/NoSQL database client and REST API client built with Tauri v2 and a Node.js sidecar. It supports MySQL, MariaDB, Microsoft SQL Server, PostgreSQL, SQLite, Cassandra, MongoDB, Redis, Azure CosmosDB, Azure Table Storage, Salesforce (SFDC), and REST APIs (curl/fetch).
+`sqlui-native` is a cross-platform desktop SQL/NoSQL database client and REST API client built with Tauri v2 and a Node.js sidecar. It supports MySQL, MariaDB, Microsoft SQL Server, PostgreSQL, SQLite, Cassandra, MongoDB, Redis, Azure CosmosDB, Azure Table Storage, Salesforce (SFDC), GraphQL, and REST APIs (curl/fetch).
 
 It supports multiple windows, so you can run different sets of queries and connections side by side. Connections and queries are stored locally and persist across sessions.
 
@@ -28,34 +28,20 @@ Requires **Node.js 22+** on the host.
 
 ### Quick start (download from a release)
 
-**One tarball, two flows.** The release ships a single `sqlui-portal.tar.gz` whose contents work for both `curl | tar` and `npx`. Pick whichever you prefer — same file, same result:
-
-#### Option A — `npx` (auto-cached, single command, Windows-friendly)
+The release ships one `sqlui-portal.tar.gz` that works with both flows:
 
 ```bash
+# Option A — npx (auto-cached, single command)
 npx https://github.com/synle/sqlui-native/releases/latest/download/sqlui-portal.tar.gz ./mydata.sqlite
-```
 
-`npx` downloads the tarball, caches it under `~/.npm/_npx/`, and runs in one step. Subsequent invocations are instant. npm/pacote strips the top-level `portal/` directory and finds the `package.json` at the root, so `.tar.gz` works just like `.tgz` would.
-
-#### Option B — `curl | tar` (no npm involved)
-
-```bash
+# Option B — curl | tar (no npm involved)
 curl -fsSL https://github.com/synle/sqlui-native/releases/latest/download/sqlui-portal.tar.gz \
   | tar -xz \
   && ./portal/sqlui-portal ./mydata.sqlite
-```
 
-#### Pin a specific version
-
-The `latest/download/sqlui-portal.tar.gz` URL is a versionless alias that always resolves to the current release. To pin to a specific tag, put the tag in the URL — the filename stays the same:
-
-```bash
+# Pin a version (same filename, tag goes in the URL)
 VERSION=4.16.0
-# Either flow:
 npx "https://github.com/synle/sqlui-native/releases/download/v${VERSION}/sqlui-portal.tar.gz" ./mydata.sqlite
-curl -fsSL "https://github.com/synle/sqlui-native/releases/download/v${VERSION}/sqlui-portal.tar.gz" | tar -xz \
-  && ./portal/sqlui-portal ./mydata.sqlite
 ```
 
 ### Build from source
@@ -73,7 +59,7 @@ This produces three files under `dist/portal/`:
 - `sqlui-portal-assets.json` — embedded React frontend (~22 MB, decoded at runtime)
 - `sqlui-portal` — bash launcher (locates Node and execs the bundle)
 
-Copy the whole `dist/portal/` directory anywhere; it has no other dependencies besides a system Node.js 22+.
+Copy the whole `dist/portal/` directory anywhere; it needs only a system Node.js 22+.
 
 ### Run
 
@@ -161,6 +147,7 @@ Refer to the [query guides](https://synle.github.io/sqlui-native/guides) for dia
 - [Azure CosmosDB](https://synle.github.io/sqlui-native/guides#cosmosdb) (limited support)
 - [Azure Table Storage](https://synle.github.io/sqlui-native/guides#aztable) (limited support)
 - [Salesforce (SFDC)](https://synle.github.io/sqlui-native/guides#sfdc) (limited support)
+- GraphQL
 - REST API (curl / fetch) — Postman-like API client with `{{variable}}` interpolation
 
 ## Features
@@ -260,26 +247,11 @@ On first launch after upgrading, existing JSON storage files are automatically m
 
 ### Data Migration
 
-Use `Data Migration` to move data between database engines. Access it from the top right hamburger menu. You can migrate from:
-
-- An existing connection (queries the source and generates scripts for the target engine)
-- Raw JSON data
+Use `Data Migration` (top right hamburger menu) to move data between database engines, from either an existing connection or raw JSON data.
 
 ![image](https://user-images.githubusercontent.com/3792401/176089071-ddfe9c67-46bb-4261-9e2b-0978fa25eee2.png)
 
 ![image](https://user-images.githubusercontent.com/3792401/176088421-5b0e6e48-0e44-41ab-b98f-0677feff70d1.png)
-
-#### Migration of Real Existing Connection
-
-Use this data migration option to move data from an existing connection
-
-![image](https://user-images.githubusercontent.com/3792401/176088688-eaba3a95-0bf9-4efa-8513-e7b4c534074f.png)
-
-#### Migration of Raw JSON Data
-
-Use this data migration option to move raw JSON data
-
-![image](https://user-images.githubusercontent.com/3792401/176088775-385777a8-a89b-460c-878d-8bb64af20f84.png)
 
 ### Bookmarks
 
