@@ -52,7 +52,7 @@ export default function ResultBox(props: ResultBoxProps): React.JSX.Element | nu
 
   if (error) {
     let errorToDisplay: any = error;
-    errorToDisplay = errorToDisplay?.original || errorToDisplay?.original || errorToDisplay;
+    errorToDisplay = errorToDisplay?.original || errorToDisplay;
 
     if (typeof errorToDisplay === "object") {
       errorToDisplay = JSON.stringify(errorToDisplay, null, 2);

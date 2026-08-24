@@ -62,7 +62,6 @@ export function parseFetchCommand(fetchString: string): RestApiRequest {
   let method: RestApiMethod = "GET";
   let url = "";
   let body: string | undefined;
-  let cookies: string | undefined;
 
   // Extract URL from fetch("url", ...) or fetch('url', ...)
   const urlMatch = fetchString.match(/fetch\s*\(\s*["']([^"']+)["']/);
@@ -132,7 +131,7 @@ export function parseFetchCommand(fetchString: string): RestApiRequest {
     params: extractParams(url),
     body,
     bodyType,
-    cookies,
+    cookies: undefined,
     followRedirects: false,
     insecure: false,
   };
