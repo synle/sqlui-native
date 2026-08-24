@@ -49,7 +49,8 @@ function hasConnectionAssociation(folderItem: SqluiCore.FolderItem): boolean {
 /**
  * Table cell that renders a bookmark name as a clickable link to open the connection or query.
  * When restoring a query with result snapshot, preserves the result data.
- * @param props - Contains the table row and optional after-select callback.
+ * @param row - The table row containing the bookmark item.
+ * @param onAfterSelect - Optional callback invoked after the bookmark is opened.
  * @returns A link element that opens the bookmark item.
  */
 function NameCell({ row, onAfterSelect }: { row: any; onAfterSelect?: OnAfterSelectCallback }) {
@@ -77,7 +78,7 @@ function NameCell({ row, onAfterSelect }: { row: any; onAfterSelect?: OnAfterSel
 
 /**
  * Table cell that renders a colored chip indicating the bookmark type (Connection or Query).
- * @param props - Contains the table row with the bookmark item.
+ * @param row - The table row containing the bookmark item.
  * @returns A MUI Chip with the bookmark type label.
  */
 function TypeCell({ row }: { row: any }) {
@@ -87,7 +88,7 @@ function TypeCell({ row }: { row: any }) {
 
 /**
  * Table cell showing indicator chips for result snapshot and connection association.
- * @param props - Contains the table row with the bookmark item.
+ * @param row - The table row containing the bookmark item.
  * @returns Indicator chips or null for non-Query items.
  */
 function InfoCell({ row }: { row: any }) {
@@ -112,7 +113,8 @@ function InfoCell({ row }: { row: any }) {
 
 /**
  * Table cell that renders the SQL of a Query bookmark with expand/collapse toggle.
- * @param props - Contains the table row and global allExpanded state.
+ * @param row - The table row containing the bookmark item.
+ * @param allExpanded - Global expand state from the toolbar toggle.
  * @returns The SQL preview element, or null for non-Query bookmarks.
  */
 function QueryDetailCell({ row, allExpanded }: { row: any; allExpanded: boolean }) {
@@ -149,7 +151,7 @@ function QueryDetailCell({ row, allExpanded }: { row: any; allExpanded: boolean 
 
 /**
  * Table cell with edit and delete action buttons for a bookmark item.
- * @param props - Contains the table row with the bookmark item.
+ * @param row - The table row containing the bookmark item.
  * @returns A box with icon buttons for editing and deleting the bookmark.
  */
 function ActionCell({ row }: { row: any }) {

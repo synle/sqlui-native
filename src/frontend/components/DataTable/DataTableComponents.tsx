@@ -74,7 +74,9 @@ type ColumnResizerProps = React.HTMLAttributes<HTMLDivElement> & {
 /**
  * A draggable column resize handle for data table headers.
  * Prevents event propagation to avoid triggering sort on resize.
- * @param props - Resizer properties including isResizing state and event handlers.
+ * @param isResizing - Whether the column is currently being resized.
+ * @param onMouseDown - Resize start handler (mouse).
+ * @param onTouchStart - Resize start handler (touch).
  * @returns A styled resize bar element.
  */
 export function ColumnResizer({ isResizing, onMouseDown, onTouchStart, ...rest }: ColumnResizerProps) {

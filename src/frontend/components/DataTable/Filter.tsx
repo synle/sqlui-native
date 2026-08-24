@@ -30,7 +30,7 @@ type SimpleColumnFilterProps = {
 /**
  * An autocomplete filter input for a single table column.
  * Suggests up to 100 unique faceted values from the column data.
- * @param props - Contains the column to filter.
+ * @param column - The table column to filter.
  * @returns An autocomplete text field for column filtering.
  */
 export function SimpleColumnFilter({ column }: SimpleColumnFilterProps) {

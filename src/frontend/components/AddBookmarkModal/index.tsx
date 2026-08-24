@@ -28,7 +28,8 @@ type AddBookmarkConnectionProps = {
 
 /**
  * Modal content for bookmarking a query with options to keep connection association and include result snapshot.
- * @param props - The query data and completion callback.
+ * @param query - The query to bookmark.
+ * @param onDone - Callback invoked after the bookmark is saved or cancelled.
  * @returns Form with bookmark name, association toggle, and result snapshot toggle.
  */
 export function AddBookmarkQueryContent({ query, onDone }: AddBookmarkQueryProps): React.JSX.Element {
@@ -116,7 +117,8 @@ export function AddBookmarkQueryContent({ query, onDone }: AddBookmarkQueryProps
 
 /**
  * Modal content for bookmarking a connection with a name input.
- * @param props - The connection data and completion callback.
+ * @param connection - The connection to bookmark.
+ * @param onDone - Callback invoked after the bookmark is saved or cancelled.
  * @returns Form with bookmark name input.
  */
 export function AddBookmarkConnectionContent({ connection, onDone }: AddBookmarkConnectionProps): React.JSX.Element {

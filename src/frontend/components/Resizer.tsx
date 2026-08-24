@@ -27,7 +27,8 @@ type BarProps = React.HTMLAttributes<HTMLDivElement> & {
 /**
  * Flex container that manages resizable sections separated by draggable bars.
  * The first Section child is resizable; subsequent sections fill remaining space.
- * @param props - Standard div props plus children (Section and Bar components).
+ * @param children - The Section and Bar components to lay out.
+ * @param style - Optional style overrides for the container.
  */
 export function Container({ children, style, ...rest }: ContainerProps) {
   const [sectionSize, setSectionSize] = useState<number | null>(null);
@@ -130,7 +131,9 @@ type BarInternalProps = BarProps & {
 
 /**
  * Draggable bar handle placed between sections to resize them horizontally.
- * @param props - Includes size (width in px) and internal drag callbacks injected by Container.
+ * @param size - The bar width in pixels.
+ * @param _onDrag - Internal drag callback injected by Container.
+ * @param _onDragEnd - Internal drag-end callback injected by Container.
  */
 export function Bar({ size, style, _onDrag, _onDragEnd, ...rest }: BarInternalProps) {
   const dragging = useRef(false);
