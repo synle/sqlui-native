@@ -40,7 +40,7 @@ curl -fsSL https://github.com/synle/sqlui-native/releases/latest/download/sqlui-
   && ./portal/sqlui-portal ./mydata.sqlite
 
 # Pin a version (same filename, tag goes in the URL)
-VERSION=4.17.0
+VERSION=4.18.0
 npx "https://github.com/synle/sqlui-native/releases/download/v${VERSION}/sqlui-portal.tar.gz" ./mydata.sqlite
 ```
 
