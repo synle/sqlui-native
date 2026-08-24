@@ -203,10 +203,11 @@ After any build-related or Vite config change, run the affected build task:
 
 ## Build Configuration
 
-- React app: Vite (`vite.frontend.config.ts`) — dev server on port 3000, proxy to port 3001
+- React app: Vite (`vite.frontend.config.ts`, via `rolldown-vite` alias — Rust bundler, ~11x faster prod builds) — dev server on port 3000, proxy to port 3001
 - Tauri sidecar bundle: Vite SSR (`vite.sqlui-server.sidecar.config.ts`) — single-file `sqlui-server.js`
 - Server: Vite SSR (`vite.sqlui-server.config.ts`) — `build/sqlui-server.js`
 - Portal bundle: Vite SSR (`vite.sqlui-portal.config.ts`) — `dist/portal/sqlui-portal.js`
+- Rust/Tauri CI builds use sccache (`RUSTC_WRAPPER`) backed by the GitHub Actions cache
 - Vitest: `vitest.config.ts` (unit) + `vitest.integration.config.ts` (integration)
 - oxfmt: 140 char width (`printWidth`), 2-space indent (`.oxfmtrc.json`)
 - NODE_VERSION: 24 (use `fnm` to switch: `fnm use 24`)

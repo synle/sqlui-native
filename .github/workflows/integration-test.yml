@@ -253,10 +253,17 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+    env:
+      # sccache: cache Rust crate compilations in the GitHub Actions cache.
+      SCCACHE_GHA_ENABLED: "true"
+      RUSTC_WRAPPER: sccache
     steps:
       - uses: actions/checkout@v6
         with:
           ref: ${{ github.ref }}
+
+      - name: Setup sccache
+        uses: mozilla-actions/sccache-action@v0.0.11
 
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable

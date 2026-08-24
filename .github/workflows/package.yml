@@ -320,11 +320,18 @@ jobs:
       # follows the *runner's* arch, so a cross-compiled target (Intel macOS built on an
       # ARM runner) would ship a Node binary the user's machine cannot execute.
       TARGET_ARCH: ${{ matrix.node_arch }}
+      # sccache: cache Rust crate compilations in the GitHub Actions cache so
+      # unchanged dependencies are not recompiled on every release build.
+      SCCACHE_GHA_ENABLED: "true"
+      RUSTC_WRAPPER: sccache
 
     steps:
       - name: Record build start time
         shell: bash
         run: echo "BUILD_START=$(date +%s)" >> $GITHUB_ENV
+
+      - name: Setup sccache
+        uses: mozilla-actions/sccache-action@v0.0.11
 
       - name: Checkout repository
         uses: actions/checkout@v6
