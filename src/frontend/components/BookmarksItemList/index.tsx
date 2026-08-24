@@ -63,12 +63,16 @@ function NameCell({ row, onAfterSelect }: { row: any; onAfterSelect?: OnAfterSel
       case "Connection":
         await upsertConnection(folderItem.data);
         navigate("/");
-        onAfterSelect && onAfterSelect();
+        if (onAfterSelect) {
+          onAfterSelect();
+        }
         break;
       case "Query":
         await onAddQuery(folderItem.data, { preserveResult: hasResultSnapshot(folderItem) });
         navigate("/");
-        onAfterSelect && onAfterSelect();
+        if (onAfterSelect) {
+          onAfterSelect();
+        }
         break;
     }
   };

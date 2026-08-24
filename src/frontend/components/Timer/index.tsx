@@ -23,14 +23,18 @@ export default function _Timer(props: TimerProps): React.JSX.Element | null {
 
   useEffect(() => {
     return () => {
-      intervalRef.current && clearInterval(intervalRef.current);
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
     };
   }, []);
 
   useEffect(() => {
     if (props.endTime) {
       setEndTime(props.endTime);
-      intervalRef.current && clearInterval(intervalRef.current);
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
       intervalRef.current = undefined;
       return;
     }
@@ -40,7 +44,9 @@ export default function _Timer(props: TimerProps): React.JSX.Element | null {
     }, 1000);
 
     return () => {
-      intervalRef.current && clearInterval(intervalRef.current);
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
       intervalRef.current = undefined;
     };
   }, [props.endTime]);

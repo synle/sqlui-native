@@ -62,7 +62,9 @@ export default function MyTabs(props: TabsProps): React.JSX.Element | null {
   const tabKeys = props.tabKeys || [];
 
   const onTabChange = (newTabIdx: number) => {
-    props.onTabChange && props.onTabChange(newTabIdx);
+    if (props.onTabChange) {
+      props.onTabChange(newTabIdx);
+    }
   };
 
   const onShowActions = (e: React.SyntheticEvent) => {

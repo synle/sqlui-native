@@ -719,7 +719,7 @@ function MigrationMetaDataInputs(props: MigrationMetaDataInputsProps): React.JSX
     //@ts-ignore
     props.onChange({
       ...migrationMetaData,
-      ...{ [propKey]: propValue },
+      [propKey]: propValue,
     });
   };
 

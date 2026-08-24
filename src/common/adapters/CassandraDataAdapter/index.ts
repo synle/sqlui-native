@@ -17,51 +17,51 @@ export default class CassandraDataAdapter extends BaseDataAdapter implements IDa
 
   private async getConnection(database?: string): Promise<cassandra.Client> {
     // attempt to pull in connections
-    return new Promise<cassandra.Client>(async (resolve, reject) => {
-      try {
-        const rawClientOptions = getClientOptions(this.connectionOption, database);
-
-        const clientOptions: cassandra.ClientOptions = {
-          contactPoints: rawClientOptions.contactPoints,
-          keyspace: rawClientOptions.keyspace,
-        };
-
-        // client authentication
-        if (rawClientOptions.authProvider) {
-          clientOptions.authProvider = new cassandra.auth.PlainTextAuthProvider(
-            rawClientOptions.authProvider.username,
-            rawClientOptions.authProvider.password,
-          );
-        }
-
+    return new Promise<cassandra.Client>((resolve, reject) => {
+      void (async () => {
         try {
-          // attempt #1: connect with SSL
-          const client = new cassandra.Client({
-            ...clientOptions,
-            ...{
+          const rawClientOptions = getClientOptions(this.connectionOption, database);
+
+          const clientOptions: cassandra.ClientOptions = {
+            contactPoints: rawClientOptions.contactPoints,
+            keyspace: rawClientOptions.keyspace,
+          };
+
+          // client authentication
+          if (rawClientOptions.authProvider) {
+            clientOptions.authProvider = new cassandra.auth.PlainTextAuthProvider(
+              rawClientOptions.authProvider.username,
+              rawClientOptions.authProvider.password,
+            );
+          }
+
+          try {
+            // attempt #1: connect with SSL
+            const client = new cassandra.Client({
+              ...clientOptions,
               sslOptions: {
                 // for Cosmosdb (Cassandra API)
                 // refer to this
                 // https://docs.microsoft.com/en-us/azure/developer/javascript/how-to/with-database/use-cassandra-as-cosmos-db#use-native-sdk-packages-to-connect-to-cassandra-db-on-azure
                 rejectUnauthorized: false,
               },
-            },
-          });
-          await this.authenticateClient(client);
-          this._connection = client;
-          resolve(client);
-        } catch (err1) {
-          console.error("CassandraDataAdapter:authenticate attempt#1", err1);
-          // attempt #2: connect without SSL
-          const client = new cassandra.Client(clientOptions);
-          await this.authenticateClient(client);
-          this._connection = client;
-          resolve(client);
+            });
+            await this.authenticateClient(client);
+            this._connection = client;
+            resolve(client);
+          } catch (err1) {
+            console.error("CassandraDataAdapter:authenticate attempt#1", err1);
+            // attempt #2: connect without SSL
+            const client = new cassandra.Client(clientOptions);
+            await this.authenticateClient(client);
+            this._connection = client;
+            resolve(client);
+          }
+        } catch (err) {
+          console.error("CassandraDataAdapter:getConnection", this.dialect, err);
+          reject(err);
         }
-      } catch (err) {
-        console.error("CassandraDataAdapter:getConnection", this.dialect, err);
-        reject(err);
-      }
+      })();
     });
   }
 

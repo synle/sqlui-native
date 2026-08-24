@@ -65,7 +65,9 @@ export default function DropdownMenu(props: DropdownMenuProps): React.JSX.Elemen
     if (anchorEl?.current && anchorEl.current.contains(event.target as HTMLElement)) {
       return;
     }
-    props.onToggle && props.onToggle(false);
+    if (props.onToggle) {
+      props.onToggle(false);
+    }
     setOpen(false);
   };
 

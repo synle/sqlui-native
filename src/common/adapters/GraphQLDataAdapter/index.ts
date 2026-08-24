@@ -101,7 +101,7 @@ export default class GraphQLDataAdapter extends BaseDataAdapter implements IData
           headers: {
             "Content-Type": "application/json",
             Accept: "application/json",
-            ...(config.headers || {}),
+            ...config.headers,
           },
           params: {},
           body: JSON.stringify({ query: "{ __typename }" }),
@@ -202,7 +202,7 @@ export default class GraphQLDataAdapter extends BaseDataAdapter implements IData
       }
 
       // Merge default headers from connection config
-      const mergedHeaders = { ...(this._config.headers || {}), ...request.headers };
+      const mergedHeaders = { ...this._config.headers, ...request.headers };
       request.headers = mergedHeaders;
 
       // Execute the GraphQL request

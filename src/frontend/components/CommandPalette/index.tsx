@@ -358,7 +358,7 @@ export default function CommandPalette(props: CommandPaletteProps): React.JSX.El
     if (moveDirection !== undefined) {
       e.preventDefault();
 
-      const allOptions = [...refOption?.current?.querySelectorAll(".CommandPalette__Option")];
+      const allOptions = [...(refOption?.current?.querySelectorAll(".CommandPalette__Option") ?? [])];
 
       const selectedElem = refOption?.current?.querySelector(".CommandPalette__Option:focus");
       let nextIndex = selectedElem ? allOptions.indexOf(selectedElem) + moveDirection : 0;

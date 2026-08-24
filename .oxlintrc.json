@@ -6,23 +6,25 @@
     "node": true
   },
   "categories": {
-    "correctness": "warn"
+    "correctness": "error"
   },
   "rules": {
     "no-unused-vars": [
-      "warn",
-      { "argsIgnorePattern": "^_", "varsIgnorePattern": "^_", "caughtErrorsIgnorePattern": "^_", "ignoreRestSiblings": true }
+      "error",
+      {
+        "argsIgnorePattern": "^_",
+        "varsIgnorePattern": "^_",
+        "caughtErrorsIgnorePattern": "^_",
+        "ignoreRestSiblings": true
+      }
     ],
-    "no-debugger": "warn",
-    "no-empty": ["warn", { "allowEmptyCatch": true }],
-    "no-async-promise-executor": "off",
-    "no-case-declarations": "off",
-    "no-fallthrough": "off",
-    "no-self-assign": "off",
-    "no-unsafe-optional-chaining": "off",
-    "no-unused-expressions": "off",
-    "unicorn/no-useless-spread": "off",
-    "unicorn/no-useless-fallback-in-spread": "off"
+    "no-debugger": "error",
+    "no-empty": [
+      "error",
+      {
+        "allowEmptyCatch": true
+      }
+    ]
   },
   "ignorePatterns": ["*.spec.ts", "*.spec.tsx", "dist", "build", "src-tauri/target", "coverage", "playwright-report", "test-results"]
 }

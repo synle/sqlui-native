@@ -21,7 +21,7 @@ function useSettingChange() {
 
     onChange({
       ...settings,
-      ...{ [key]: value },
+      [key]: value,
     });
   };
 

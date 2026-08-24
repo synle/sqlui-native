@@ -75,7 +75,11 @@ export function useActionDialogs() {
         ...props,
         type: "prompt",
         onSubmit: (yesSelected, newValue) => {
-          yesSelected ? resolve(newValue) : reject();
+          if (yesSelected) {
+            resolve(newValue);
+          } else {
+            reject();
+          }
         },
       };
 
@@ -91,7 +95,11 @@ export function useActionDialogs() {
         message,
         yesLabel,
         onSubmit: (yesSelected) => {
-          yesSelected ? resolve() : reject();
+          if (yesSelected) {
+            resolve();
+          } else {
+            reject();
+          }
         },
       };
 
@@ -108,7 +116,11 @@ export function useActionDialogs() {
         message,
         options,
         onSubmit: (yesSelected, newValue) => {
-          yesSelected && newValue ? resolve(newValue) : reject();
+          if (yesSelected && newValue) {
+            resolve(newValue);
+          } else {
+            reject();
+          }
         },
         required,
       };

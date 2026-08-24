@@ -38,22 +38,24 @@ export default class SampleDataAdapter extends BaseDataAdapter implements IDataA
    *   - Store the client in `this._connection`.
    */
   private async getConnection(): Promise<AdapterClient> {
-    return new Promise<AdapterClient>(async (resolve, reject) => {
-      try {
-        setTimeout(() => reject("Connection timeout"), MAX_CONNECTION_TIMEOUT);
+    return new Promise<AdapterClient>((resolve, reject) => {
+      void (async () => {
+        try {
+          setTimeout(() => reject("Connection timeout"), MAX_CONNECTION_TIMEOUT);
 
-        // TODO: create and connect your client here
-        // Example:
-        //   const client = new Client({ connectionString: this.connectionOption });
-        //   await client.connect();
-        //   this._connection = client;
-        //   resolve(client);
-        this._connection = {};
-        resolve(this._connection);
-      } catch (err) {
-        console.error("SampleDataAdapter:getConnection", err);
-        reject(err);
-      }
+          // TODO: create and connect your client here
+          // Example:
+          //   const client = new Client({ connectionString: this.connectionOption });
+          //   await client.connect();
+          //   this._connection = client;
+          //   resolve(client);
+          this._connection = {};
+          resolve(this._connection);
+        } catch (err) {
+          console.error("SampleDataAdapter:getConnection", err);
+          reject(err);
+        }
+      })();
     });
   }
 

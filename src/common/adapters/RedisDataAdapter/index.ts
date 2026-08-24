@@ -13,7 +13,7 @@ export default class RedisDataAdapter extends BaseDataAdapter implements IDataAd
 
   private async getConnection(): Promise<RedisClientType> {
     // attempt to pull in connections
-    return new Promise<RedisClientType>(async (resolve, reject) => {
+    return new Promise<RedisClientType>((resolve, reject) => {
       let connectionTimeout: ReturnType<typeof setTimeout> | undefined;
       try {
         connectionTimeout = setTimeout(() => reject("Connection Timeout"), MAX_CONNECTION_TIMEOUT);

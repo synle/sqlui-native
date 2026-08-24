@@ -39,7 +39,9 @@ export default function DropdownButton(props: DropdownButtonProps): React.JSX.El
 
     setOpen((prevOpen) => !prevOpen);
 
-    props.onToggle && props.onToggle(!open);
+    if (props.onToggle) {
+      props.onToggle(!open);
+    }
   };
 
   useEffect(() => {
@@ -65,7 +67,9 @@ export default function DropdownButton(props: DropdownButtonProps): React.JSX.El
         open={open}
         onToggle={(newOpen) => {
           setOpen(newOpen);
-          props.onToggle && props.onToggle(newOpen);
+          if (props.onToggle) {
+            props.onToggle(newOpen);
+          }
         }}
         isLoading={props.isLoading}
         maxHeight={maxHeight}

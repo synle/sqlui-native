@@ -8,7 +8,7 @@ import BaseDataAdapter from "src/common/adapters/BaseDataAdapter/index";
 export function getClientOptions(connectionOption: string) {
   const options = BaseDataAdapter.getConnectionParameters(connectionOption) as any;
 
-  const { host, port } = options?.hosts[0];
+  const { host, port } = options?.hosts?.[0] ?? {};
   const { scheme, password } = options;
 
   const clientOptions: any = {

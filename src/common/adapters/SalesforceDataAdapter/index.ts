@@ -187,45 +187,47 @@ export default class SalesforceDataAdapter extends BaseDataAdapter implements ID
       return this._connection;
     }
 
-    return new Promise<Connection>(async (resolve, reject) => {
-      const timer = setTimeout(() => reject(new Error("Connection timeout — check your login URL and network")), MAX_CONNECTION_TIMEOUT);
-      try {
-        const { username, password, securityToken, loginUrl, clientId, clientSecret } = parseSfdcConnectionString(this.connectionOption);
+    return new Promise<Connection>((resolve, reject) => {
+      void (async () => {
+        const timer = setTimeout(() => reject(new Error("Connection timeout — check your login URL and network")), MAX_CONNECTION_TIMEOUT);
+        try {
+          const { username, password, securityToken, loginUrl, clientId, clientSecret } = parseSfdcConnectionString(this.connectionOption);
 
-        const connOptions: any = { loginUrl };
+          const connOptions: any = { loginUrl };
 
-        // Use OAuth2 flow when clientId is provided
-        if (clientId) {
-          connOptions.oauth2 = {
-            loginUrl,
-            clientId,
-            clientSecret: clientSecret || undefined,
-          };
+          // Use OAuth2 flow when clientId is provided
+          if (clientId) {
+            connOptions.oauth2 = {
+              loginUrl,
+              clientId,
+              clientSecret: clientSecret || undefined,
+            };
+          }
+
+          const conn = new Connection(connOptions);
+
+          if (clientId && !username) {
+            // OAuth2 Client Credentials flow (no username/password)
+            // Uses native https instead of jsforce's oauth2.requestToken which hangs in bundled builds
+            this._isClientCredentials = true;
+            const tokenResponse = await requestOAuth2Token(loginUrl, clientId, clientSecret);
+            (conn as any)._establish({
+              instanceUrl: tokenResponse.instance_url,
+              accessToken: tokenResponse.access_token,
+            });
+          } else {
+            await conn.login(username, password + securityToken);
+          }
+
+          clearTimeout(timer);
+          this._connection = conn;
+          resolve(conn);
+        } catch (err: any) {
+          clearTimeout(timer);
+          console.error("SalesforceDataAdapter:getConnection", err);
+          reject(new Error(getSfdcErrorMessage(err)));
         }
-
-        const conn = new Connection(connOptions);
-
-        if (clientId && !username) {
-          // OAuth2 Client Credentials flow (no username/password)
-          // Uses native https instead of jsforce's oauth2.requestToken which hangs in bundled builds
-          this._isClientCredentials = true;
-          const tokenResponse = await requestOAuth2Token(loginUrl, clientId, clientSecret);
-          (conn as any)._establish({
-            instanceUrl: tokenResponse.instance_url,
-            accessToken: tokenResponse.access_token,
-          });
-        } else {
-          await conn.login(username, password + securityToken);
-        }
-
-        clearTimeout(timer);
-        this._connection = conn;
-        resolve(conn);
-      } catch (err: any) {
-        clearTimeout(timer);
-        console.error("SalesforceDataAdapter:getConnection", err);
-        reject(new Error(getSfdcErrorMessage(err)));
-      }
+      })();
     });
   }
 

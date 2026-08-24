@@ -134,7 +134,7 @@ export default abstract class BaseDataAdapter {
       } else {
         // TODO: figure out the max length
         columnsMap[key] = {
-          ...(columnsMap[key] || {}),
+          ...columnsMap[key],
           name: key,
           propertyPath: path,
           type: onTypeConverter(type, item),

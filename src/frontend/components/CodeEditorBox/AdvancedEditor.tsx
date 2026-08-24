@@ -363,9 +363,7 @@ export default function AdvancedEditor(props: AdvancedEditorProps): React.JSX.El
     <AdvancedEditorContainer
       className="AdvancedEditorContainer"
       ref={monacoEl}
-      style={{
-        ...(props.fillHeight ? { flex: 1, minHeight: 0 } : { height: props.height }),
-      }}
+      style={props.fillHeight ? { flex: 1, minHeight: 0 } : { height: props.height }}
     ></AdvancedEditorContainer>
   );
 }

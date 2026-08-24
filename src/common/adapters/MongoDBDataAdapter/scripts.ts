@@ -223,7 +223,7 @@ export function getUpdate(input: SqlAction.TableInput): SqlAction.Output | undef
 
   const filters = {
     ...columns,
-    ...{ _id: "some_id" },
+    _id: "some_id",
   };
 
   return {

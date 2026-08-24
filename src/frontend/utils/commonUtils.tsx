@@ -28,7 +28,7 @@ export function getExportedConnection(
  */
 export function getExportedQuery(query: SqluiFrontend.ConnectionQuery) {
   const { id, name, sql, connectionId, databaseId, tableId } = query;
-  return { _type: "query", ...{ id, name, sql, connectionId, databaseId, tableId } };
+  return { _type: "query", id, name, sql, connectionId, databaseId, tableId };
 }
 
 /**

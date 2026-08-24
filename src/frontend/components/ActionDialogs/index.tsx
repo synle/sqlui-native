@@ -19,19 +19,27 @@ export default function ActionDialogs(): React.JSX.Element | null {
 
   const onConfirmSubmit = () => {
     dismiss();
-    dialog.onSubmit && dialog.onSubmit(true);
+    if (dialog.onSubmit) {
+      dialog.onSubmit(true);
+    }
   };
   const onPromptSaveClick = (newValue?: string) => {
     dismiss();
-    dialog.onSubmit && dialog.onSubmit(true, newValue);
+    if (dialog.onSubmit) {
+      dialog.onSubmit(true, newValue);
+    }
   };
   const onChoiceSelect = (newValue?: string) => {
     dismiss();
-    dialog.onSubmit && dialog.onSubmit(true, newValue);
+    if (dialog.onSubmit) {
+      dialog.onSubmit(true, newValue);
+    }
   };
   const onDimiss = () => {
     dismiss();
-    dialog.onSubmit && dialog.onSubmit(false);
+    if (dialog.onSubmit) {
+      dialog.onSubmit(false);
+    }
   };
 
   switch (dialog.type) {

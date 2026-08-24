@@ -177,7 +177,9 @@ export default function SimpleEditor(props: SimpleEditorProps): React.JSX.Elemen
   };
 
   const onInputBlur = (e) => {
-    props.onBlur && props.onBlur(e.target.value);
+    if (props.onBlur) {
+      props.onBlur(e.target.value);
+    }
   };
 
   useEffect(() => setText(value), [value]);

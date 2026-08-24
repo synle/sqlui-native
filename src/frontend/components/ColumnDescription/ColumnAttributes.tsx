@@ -29,9 +29,7 @@ export default function ColumnAttributes(props: ColumnAttributesProps): React.JS
         value = JSON.stringify(value);
       } else if (value === null) {
         value = "null";
-      } else if (typeof value === "string") {
-        value = value;
-      } else {
+      } else if (typeof value !== "string") {
         value = JSON.stringify(value, null, 2);
       }
 

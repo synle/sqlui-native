@@ -17,18 +17,20 @@ export default class MongoDBDataAdapter extends BaseDataAdapter implements IData
 
   private async getConnection(connectionToUse?: string): Promise<MongoClient> {
     // attempt to pull in connections
-    return new Promise<MongoClient>(async (resolve, reject) => {
-      try {
-        setTimeout(() => reject("Connection Timeout"), MAX_CONNECTION_TIMEOUT);
+    return new Promise<MongoClient>((resolve, reject) => {
+      void (async () => {
+        try {
+          setTimeout(() => reject("Connection Timeout"), MAX_CONNECTION_TIMEOUT);
 
-        const client = new MongoClient(connectionToUse || this.connectionOption);
-        await client.connect();
-        this._connection = client;
-        resolve(client);
-      } catch (err) {
-        console.error("MongoDBDataAdapter:getConnection", err);
-        reject(err);
-      }
+          const client = new MongoClient(connectionToUse || this.connectionOption);
+          await client.connect();
+          this._connection = client;
+          resolve(client);
+        } catch (err) {
+          console.error("MongoDBDataAdapter:getConnection", err);
+          reject(err);
+        }
+      })();
     });
   }
 

@@ -764,7 +764,7 @@ export function setUpDataEndpoints(aHonoAppContext: Hono) {
         // old entry may not exist
       }
       await dbStorage.delete(managedDatabaseId);
-      const mergedProps = { ...(existing?.props || {}), ...(props || {}) };
+      const mergedProps = { ...existing?.props, ...props };
       const result = await dbStorage.add({
         id: name,
         name,
@@ -785,7 +785,7 @@ export function setUpDataEndpoints(aHonoAppContext: Hono) {
       // Props-only update (no rename)
       try {
         const entry = await dbStorage.get(managedDatabaseId);
-        const updated = await dbStorage.update({ ...entry, props: { ...(entry.props || {}), ...props } });
+        const updated = await dbStorage.update({ ...entry, props: { ...entry.props, ...props } });
         res.status(200).json(updated);
       } catch (err) {
         console.error(`Endpoints.ts:handler [PUT /api/connection/:connectionId/managedDatabase/:managedDatabaseId]`, err);
@@ -860,7 +860,7 @@ export function setUpDataEndpoints(aHonoAppContext: Hono) {
       }
       const updates = { ...entry };
       if (name) updates.name = name;
-      if (props) updates.props = { ...(entry.props || {}), ...props };
+      if (props) updates.props = { ...entry.props, ...props };
       const updated = await storage.update(updates);
       res.status(200).json(updated);
     } catch (err) {

@@ -1103,7 +1103,7 @@ export default function MissionControl() {
 
     // check for duplicate id (only relevant when keeping IDs)
     if (mode === "keepIds") {
-      const hasDuplicateIds = new Set([...jsonRows.map((jsonRow) => jsonRow.id)]).size !== jsonRows.length;
+      const hasDuplicateIds = new Set(jsonRows.map((jsonRow) => jsonRow.id)).size !== jsonRows.length;
       if (hasDuplicateIds) {
         return alert(`Import failed. JSON Config includes duplicate IDs.`);
       }
@@ -1562,7 +1562,7 @@ export default function MissionControl() {
           break;
 
         case "clientEvent/query/changeTabOrdering":
-          const { from, to } = command?.data as any;
+          const { from, to } = (command?.data ?? {}) as any;
           if (from !== undefined && to !== undefined) {
             await connectionQueries.onChangeTabOrdering(from, to);
           }
@@ -1952,10 +1952,14 @@ export default function MissionControl() {
     };
 
     document.addEventListener("keydown", onKeyboardShortcutEventForAll, true);
-    !appPlatform.isDesktop && document.addEventListener("keydown", onKeyboardShortcutEventForBrowser, true);
+    if (!appPlatform.isDesktop) {
+      document.addEventListener("keydown", onKeyboardShortcutEventForBrowser, true);
+    }
     return () => {
       document.removeEventListener("keydown", onKeyboardShortcutEventForAll, true);
-      !appPlatform.isDesktop && document.removeEventListener("keydown", onKeyboardShortcutEventForBrowser, true);
+      if (!appPlatform.isDesktop) {
+        document.removeEventListener("keydown", onKeyboardShortcutEventForBrowser, true);
+      }
     };
   }, []);
 

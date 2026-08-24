@@ -17,16 +17,18 @@ export default class AzureTableStorageAdapter extends BaseDataAdapter implements
    */
   private async getTableServiceClient() {
     // attempt to pull in connections
-    return new Promise<TableServiceClient>(async (resolve, reject) => {
-      try {
-        setTimeout(() => reject("Connection timeout"), MAX_CONNECTION_TIMEOUT);
+    return new Promise<TableServiceClient>((resolve, reject) => {
+      void (async () => {
+        try {
+          setTimeout(() => reject("Connection timeout"), MAX_CONNECTION_TIMEOUT);
 
-        const connectionString = this.getConnectionString();
-        resolve(TableServiceClient.fromConnectionString(connectionString));
-      } catch (err) {
-        console.error("AzureTableStorageAdapter:getTableServiceClient", err);
-        reject(err);
-      }
+          const connectionString = this.getConnectionString();
+          resolve(TableServiceClient.fromConnectionString(connectionString));
+        } catch (err) {
+          console.error("AzureTableStorageAdapter:getTableServiceClient", err);
+          reject(err);
+        }
+      })();
     });
   }
 
@@ -36,20 +38,22 @@ export default class AzureTableStorageAdapter extends BaseDataAdapter implements
    */
   private async getTableClient(table?: string) {
     // attempt to pull in connections
-    return new Promise<TableClient | undefined>(async (resolve, reject) => {
-      try {
-        setTimeout(() => reject("Connection timeout"), MAX_CONNECTION_TIMEOUT);
+    return new Promise<TableClient | undefined>((resolve, reject) => {
+      void (async () => {
+        try {
+          setTimeout(() => reject("Connection timeout"), MAX_CONNECTION_TIMEOUT);
 
-        if (!table) {
-          return reject("Table is required to initiate Azure Table TableClient");
+          if (!table) {
+            return reject("Table is required to initiate Azure Table TableClient");
+          }
+
+          const connectionString = this.getConnectionString();
+          resolve(TableClient.fromConnectionString(connectionString, table));
+        } catch (err) {
+          console.error("AzureTableStorageAdapter:getTableClient", err);
+          reject(err);
         }
-
-        const connectionString = this.getConnectionString();
-        resolve(TableClient.fromConnectionString(connectionString, table));
-      } catch (err) {
-        console.error("AzureTableStorageAdapter:getTableClient", err);
-        reject(err);
-      }
+      })();
     });
   }
 
@@ -58,22 +62,24 @@ export default class AzureTableStorageAdapter extends BaseDataAdapter implements
 
   /** Authenticates by verifying the Azure Table Storage service is accessible. */
   async authenticate() {
-    return new Promise<void>(async (resolve, reject) => {
-      try {
-        setTimeout(() => reject("Connection timeout"), MAX_CONNECTION_TIMEOUT);
+    return new Promise<void>((resolve, reject) => {
+      void (async () => {
+        try {
+          setTimeout(() => reject("Connection timeout"), MAX_CONNECTION_TIMEOUT);
 
-        const serviceClient = await this.getTableServiceClient();
-        const props = await serviceClient.getProperties();
+          const serviceClient = await this.getTableServiceClient();
+          const props = await serviceClient.getProperties();
 
-        if (props) {
-          return resolve();
+          if (props) {
+            return resolve();
+          }
+
+          throw new Error("Cannot connect to Azure Table");
+        } catch (err) {
+          console.error("AzureTableStorageAdapter:authenticate", err);
+          reject(err);
         }
-
-        throw new Error("Cannot connect to Azure Table");
-      } catch (err) {
-        console.error("AzureTableStorageAdapter:authenticate", err);
-        reject(err);
-      }
+      })();
     });
   }
 

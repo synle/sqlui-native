@@ -18,18 +18,20 @@ export default class AzureCosmosDataAdapter extends BaseDataAdapter implements I
 
   private async getConnection(): Promise<CosmosClient> {
     // attempt to pull in connections
-    return new Promise<CosmosClient>(async (resolve, reject) => {
-      try {
-        setTimeout(() => reject("Connection Timeout"), MAX_CONNECTION_TIMEOUT);
+    return new Promise<CosmosClient>((resolve, reject) => {
+      void (async () => {
+        try {
+          setTimeout(() => reject("Connection Timeout"), MAX_CONNECTION_TIMEOUT);
 
-        const client = new CosmosClient(this.getConnectionString());
-        this._connection = client;
+          const client = new CosmosClient(this.getConnectionString());
+          this._connection = client;
 
-        resolve(client);
-      } catch (err) {
-        console.error("AzureCosmosDataAdapter:getConnection", err);
-        reject(err);
-      }
+          resolve(client);
+        } catch (err) {
+          console.error("AzureCosmosDataAdapter:getConnection", err);
+          reject(err);
+        }
+      })();
     });
   }
 
@@ -45,24 +47,26 @@ export default class AzureCosmosDataAdapter extends BaseDataAdapter implements I
 
   /** Authenticates by verifying the CosmosDB read endpoint is accessible. */
   async authenticate() {
-    return new Promise<void>(async (resolve, reject) => {
-      try {
-        setTimeout(() => reject("Connection timeout"), MAX_CONNECTION_TIMEOUT);
+    return new Promise<void>((resolve, reject) => {
+      void (async () => {
+        try {
+          setTimeout(() => reject("Connection timeout"), MAX_CONNECTION_TIMEOUT);
 
-        await this.getDatabases();
+          await this.getDatabases();
 
-        const client = await this.getConnection();
-        const readEndpoint = await client.getReadEndpoint();
+          const client = await this.getConnection();
+          const readEndpoint = await client.getReadEndpoint();
 
-        if (readEndpoint) {
-          resolve();
-        } else {
-          throw new Error("Failed to connect to Azure CosmosDB - Empty read endpoint");
+          if (readEndpoint) {
+            resolve();
+          } else {
+            throw new Error("Failed to connect to Azure CosmosDB - Empty read endpoint");
+          }
+        } catch (err) {
+          console.error("AzureCosmosDataAdapter:authenticate", err);
+          reject(err);
         }
-      } catch (err) {
-        console.error("AzureCosmosDataAdapter:authenticate", err);
-        reject(err);
-      }
+      })();
     });
   }
 
