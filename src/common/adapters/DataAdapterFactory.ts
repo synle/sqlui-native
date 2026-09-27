@@ -26,6 +26,7 @@ import {
   getManagedDatabasesStorage,
   getManagedTablesStorage,
 } from "src/common/PersistentStorage";
+import { allSettledWithLimit } from "src/common/utils/allSettledWithLimit";
 import { writeDebugLog } from "src/common/utils/debugLogger";
 import { safeDisconnect } from "src/common/utils/errorUtils";
 import { SqluiCore } from "typings";
@@ -57,6 +58,9 @@ function addPendingRefresh(key: string) {
 
 /** Minimum age (ms) a cache entry must reach before a background refresh is triggered. */
 const CACHE_REFRESH_THRESHOLD_MS = 5 * 60 * 1000;
+
+/** Max concurrent getTables calls when loading metadata for uncached databases. */
+const TABLE_FETCH_CONCURRENCY = 6;
 
 /**
  * Returns true if a cache entry's timestamp is old enough to warrant a background refresh.
@@ -493,9 +497,10 @@ export async function getConnectionMetaData(connection: SqluiCore.CoreConnection
       }
     }
 
-    // Fetch tables for uncached databases in parallel instead of sequentially
+    // Fetch tables for uncached databases in parallel, capped so servers with hundreds
+    // of databases do not exhaust the adapter's connection pool.
     if (uncachedDatabases.length > 0) {
-      const tableResults = await Promise.allSettled(uncachedDatabases.map((db) => engine.getTables(db.name)));
+      const tableResults = await allSettledWithLimit(uncachedDatabases, TABLE_FETCH_CONCURRENCY, (db) => engine.getTables(db.name));
       for (let i = 0; i < uncachedDatabases.length; i++) {
         const result = tableResults[i];
         const database = uncachedDatabases[i];
