@@ -77,6 +77,18 @@ describe("ResultBox", () => {
     expect(container.textContent).toContain("Simple Error");
   });
 
+  test("error with errorKind=network shows the network hint", () => {
+    const query = { ...baseQuery, result: { ok: false, error: "connect ECONNREFUSED", errorKind: "network" } } as any;
+    const { getByTestId } = render(<ResultBox query={query} executing={false} />);
+    expect(getByTestId("error-kind-hint").textContent).toContain("Could not reach the server");
+  });
+
+  test("error with errorKind=unknown shows no hint", () => {
+    const query = { ...baseQuery, result: { ok: false, error: "weird", errorKind: "unknown" } } as any;
+    const { queryByTestId } = render(<ResultBox query={query} executing={false} />);
+    expect(queryByTestId("error-kind-hint")).toBeNull();
+  });
+
   test("no query result returns null", () => {
     const { container } = render(<ResultBox query={baseQuery} executing={false} />);
     expect(container.textContent).toBe("");

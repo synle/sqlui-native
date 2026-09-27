@@ -1,5 +1,7 @@
 /** Shared error formatting and adapter cleanup utilities. */
 
+import { SqluiCore } from "typings";
+
 /** Guards against cycles when unwrapping nested error payloads. */
 const MAX_ERROR_UNWRAP_DEPTH = 3;
 
@@ -64,6 +66,85 @@ export function formatErrorMessage(err: any, fallback = "Internal Server Error",
   }
 
   return fallback;
+}
+
+/** Driver/system error codes mapped to a coarse failure category. Matched by code, never by message. */
+const ERROR_CODE_KINDS: Record<string, SqluiCore.ErrorKind> = {
+  // Node system errors
+  ECONNREFUSED: "network",
+  ECONNRESET: "network",
+  ENOTFOUND: "network",
+  EHOSTUNREACH: "network",
+  ENETUNREACH: "network",
+  EAI_AGAIN: "network",
+  ETIMEDOUT: "timeout",
+  // mysql / mariadb
+  ER_ACCESS_DENIED_ERROR: "auth",
+  ER_DBACCESS_DENIED_ERROR: "auth",
+  ER_PARSE_ERROR: "syntax",
+  ER_NO_SUCH_TABLE: "syntax",
+  ER_BAD_FIELD_ERROR: "syntax",
+  ER_BAD_DB_ERROR: "syntax",
+  ER_QUERY_INTERRUPTED: "cancelled",
+  PROTOCOL_SEQUENCE_TIMEOUT: "timeout",
+  // postgres (SQLSTATE)
+  "28000": "auth",
+  "28P01": "auth",
+  "57014": "cancelled",
+  // mssql (tedious)
+  ELOGIN: "auth",
+  ETIMEOUT: "timeout",
+  ESOCKET: "network",
+  ECANCEL: "cancelled",
+  // sqlite
+  SQLITE_ERROR: "syntax",
+  SQLITE_INTERRUPT: "cancelled",
+  // local abort
+  ABORT_ERR: "cancelled",
+};
+
+/** Postgres SQLSTATE class 42 = syntax error or access rule violation (undefined table/column, bad SQL). */
+const PG_SYNTAX_CLASS_PREFIX = "42";
+
+/**
+ * Classifies a caught execution error into a coarse {@link SqluiCore.ErrorKind} using
+ * driver error codes only (never message text, which varies by locale and version).
+ * `AggregateError` is classified by its first classifiable cause.
+ * @param err - The caught error value (may be any type).
+ * @param depth - Internal recursion counter.
+ * @returns The failure category, `"unknown"` when no code matches.
+ */
+export function classifyError(err: any, depth = 0): SqluiCore.ErrorKind {
+  if (err === null || err === undefined || typeof err !== "object") {
+    return "unknown";
+  }
+
+  if (depth < MAX_ERROR_UNWRAP_DEPTH && Array.isArray(err.errors)) {
+    for (const cause of err.errors) {
+      const kind = classifyError(cause, depth + 1);
+      if (kind !== "unknown") {
+        return kind;
+      }
+    }
+  }
+
+  if (err.name === "AbortError") {
+    return "cancelled";
+  }
+
+  const code = err.code === undefined || err.code === null ? "" : String(err.code);
+  if (code && ERROR_CODE_KINDS[code]) {
+    return ERROR_CODE_KINDS[code];
+  }
+  if (code.length === 5 && code.startsWith(PG_SYNTAX_CLASS_PREFIX)) {
+    return "syntax";
+  }
+
+  if (depth < MAX_ERROR_UNWRAP_DEPTH && err.cause && typeof err.cause === "object") {
+    return classifyError(err.cause, depth + 1);
+  }
+
+  return "unknown";
 }
 
 /**

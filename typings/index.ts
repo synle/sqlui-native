@@ -191,12 +191,20 @@ export module SqluiCore {
   /** Query result metadata. */
   export type MetaData = any;
 
+  /**
+   * Coarse category of a failed execution, derived from driver error codes.
+   * Lets the client branch on failure type without parsing error messages.
+   */
+  export type ErrorKind = "auth" | "network" | "timeout" | "syntax" | "cancelled" | "unknown";
+
   /** Result of a query execution. */
   export type Result = {
     ok: boolean;
     raw?: RawData;
     meta?: MetaData;
     error?: any;
+    /** Failure category; only set when `ok` is false. */
+    errorKind?: ErrorKind;
     affectedRows?: number;
   };
 

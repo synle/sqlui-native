@@ -14,7 +14,7 @@ import Tabs from "src/frontend/components/Tabs";
 import Timer from "src/frontend/components/Timer";
 import { dataToCsv } from "src/frontend/data/file";
 import { useDownloadResultToast } from "src/frontend/hooks/useDownloadResultToast";
-import { SqluiFrontend } from "typings";
+import { SqluiCore, SqluiFrontend } from "typings";
 
 /** Props for the ResultBox component. */
 type ResultBoxProps = {
@@ -61,6 +61,7 @@ export default function ResultBox(props: ResultBoxProps): React.JSX.Element | nu
     return (
       <>
         <QueryTimeDescription query={query} />
+        <ErrorKindHint errorKind={queryResult?.errorKind} />
         <CodeEditorBox value={errorToDisplay} language="json" wordWrap={true} />
       </>
     );
@@ -201,6 +202,38 @@ export default function ResultBox(props: ResultBoxProps): React.JSX.Element | nu
       {snapshotInfo}
       <Tabs tabIdx={tabIdx} tabHeaders={tabHeaders} tabContents={tabContents} onTabChange={(newTabIdx) => setTabIdx(newTabIdx)}></Tabs>
     </div>
+  );
+}
+
+/** Actionable hint per failure category; `unknown` intentionally has none. */
+const ERROR_KIND_HINTS: Partial<Record<SqluiCore.ErrorKind, string>> = {
+  auth: "Authentication failed. Check the username, password, and permissions for this connection.",
+  network: "Could not reach the server. Check the host, port, VPN, and that the database is running.",
+  timeout: "The request timed out. The server may be overloaded or the query may be too slow.",
+  syntax: "The query was rejected by the server. Check the syntax and the referenced tables/columns.",
+  cancelled: "The query was cancelled.",
+};
+
+/** Props for the ErrorKindHint component. */
+type ErrorKindHintProps = {
+  /** Failure category returned by the server, if any. */
+  errorKind?: SqluiCore.ErrorKind;
+};
+
+/**
+ * Renders a short actionable hint above an execution error, keyed by error category.
+ * @param props - The error category.
+ * @returns A warning alert, or null when there is no hint for the category.
+ */
+export function ErrorKindHint(props: ErrorKindHintProps): React.JSX.Element | null {
+  const hint = props.errorKind ? ERROR_KIND_HINTS[props.errorKind] : undefined;
+  if (!hint) {
+    return null;
+  }
+  return (
+    <Alert severity="warning" data-testid="error-kind-hint">
+      {hint}
+    </Alert>
   );
 }
 

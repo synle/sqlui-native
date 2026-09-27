@@ -25,7 +25,7 @@ import {
   getStorageDir,
 } from "src/common/PersistentStorage";
 import { writeDebugLog } from "src/common/utils/debugLogger";
-import { backfillTimestamps, formatErrorMessage, safeDisconnect } from "src/common/utils/errorUtils";
+import { backfillTimestamps, classifyError, formatErrorMessage, safeDisconnect } from "src/common/utils/errorUtils";
 import { SqluiCore, SqluiEnums } from "typings";
 let honoAppContext: Hono | undefined;
 
@@ -611,7 +611,7 @@ export function setUpDataEndpoints(aHonoAppContext: Hono) {
     } catch (err: any) {
       const message = formatErrorMessage(err, "Query execution failed");
       console.error("Endpoints.ts:execute", err);
-      res.status(200).json({ ok: false, error: message });
+      res.status(200).json({ ok: false, error: message, errorKind: classifyError(err) });
     } finally {
       await safeDisconnect(engine);
     }
