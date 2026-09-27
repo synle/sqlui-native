@@ -196,7 +196,12 @@ export default function AdvancedEditor(props: AdvancedEditorProps): React.JSX.El
         const allItems = props.completionItems || [];
         const items = isSql
           ? getContextualCompletions(
-              _model.getValueInRange({ startLineNumber: 1, startColumn: 1, endLineNumber: position.lineNumber, endColumn: position.column }),
+              _model.getValueInRange({
+                startLineNumber: 1,
+                startColumn: 1,
+                endLineNumber: position.lineNumber,
+                endColumn: position.column,
+              }),
               _model.getValue(),
               allItems,
               props.completionColumnsByTable,

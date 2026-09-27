@@ -1,10 +1,5 @@
 import { describe, test, expect, vi } from "vitest";
-import {
-  cancelExecution,
-  isValidExecutionId,
-  registerExecution,
-  unregisterExecution,
-} from "src/common/utils/inFlightExecutions";
+import { cancelExecution, isValidExecutionId, registerExecution, unregisterExecution } from "src/common/utils/inFlightExecutions";
 
 const fakeEngine = (cancel?: () => Promise<boolean>): any => ({ cancel });
 
@@ -27,7 +22,11 @@ describe("inFlightExecutions", () => {
   });
 
   test("returns not_found after unregister and for another connection's id", async () => {
-    registerExecution("conn1", "exec2", fakeEngine(async () => true));
+    registerExecution(
+      "conn1",
+      "exec2",
+      fakeEngine(async () => true),
+    );
     expect(await cancelExecution("conn2", "exec2")).toBe("not_found");
     unregisterExecution("conn1", "exec2");
     expect(await cancelExecution("conn1", "exec2")).toBe("not_found");
@@ -40,7 +39,11 @@ describe("inFlightExecutions", () => {
   });
 
   test("returns idle when the adapter had nothing running", async () => {
-    registerExecution("conn1", "exec4", fakeEngine(async () => false));
+    registerExecution(
+      "conn1",
+      "exec4",
+      fakeEngine(async () => false),
+    );
     expect(await cancelExecution("conn1", "exec4")).toBe("idle");
     unregisterExecution("conn1", "exec4");
   });

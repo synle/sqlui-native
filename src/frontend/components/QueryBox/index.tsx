@@ -536,7 +536,8 @@ function QueryBox(props: QueryBoxProps): React.JSX.Element | null {
       executionEnd: Date.now(),
       result: {
         ok: false,
-        error: "Query abandoned. This connection type does not support server-side cancel, so the query may still be running on the server.",
+        error:
+          "Query abandoned. This connection type does not support server-side cancel, so the query may still be running on the server.",
         errorKind: "cancelled",
       },
     });

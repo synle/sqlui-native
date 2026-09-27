@@ -11,7 +11,10 @@ const ITEMS: CompletionItem[] = [
 ];
 
 const COLUMNS = {
-  Customers: [{ name: "id", type: "int" }, { name: "name", type: "text" }],
+  Customers: [
+    { name: "id", type: "int" },
+    { name: "name", type: "text" },
+  ],
   orders: [{ name: "id" }, { name: "customer_id" }, { name: "total" }],
 };
 

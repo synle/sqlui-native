@@ -26,7 +26,10 @@ const IDENT = String.raw`(?:[A-Za-z_][\w$]*|\x60[^\x60]+\x60|"[^"]+"|\[[^\]]+\])
 const QUALIFIED_TAIL = new RegExp(String.raw`(${IDENT})\.([\w$]*)$`);
 
 /** Table reference with optional alias after a table-introducing keyword. */
-const TABLE_REFERENCE = new RegExp(String.raw`\b(?:from|join|update|into)\s+(${IDENT}(?:\.${IDENT})?)(?:\s+(?:as\s+)?([A-Za-z_][\w$]*))?`, "gi");
+const TABLE_REFERENCE = new RegExp(
+  String.raw`\b(?:from|join|update|into)\s+(${IDENT}(?:\.${IDENT})?)(?:\s+(?:as\s+)?([A-Za-z_][\w$]*))?`,
+  "gi",
+);
 
 /** Keywords after which the next token is a table name. */
 const TABLE_POSITION_KEYWORDS = new Set(["from", "join", "into", "update", "table"]);
@@ -122,7 +125,11 @@ export function getContextualCompletions(
     const table = parseTableAliases(fullText).get(qualifier) ?? qualifier;
     const columns = findColumns(columnsByTable, table);
     if (columns) {
-      return columns.map((column) => ({ label: column.name, kind: "column", detail: `Column (${table}${column.type ? ` - ${column.type}` : ""})` }));
+      return columns.map((column) => ({
+        label: column.name,
+        kind: "column",
+        detail: `Column (${table}${column.type ? ` - ${column.type}` : ""})`,
+      }));
     }
     const isDatabase = items.some((item) => item.kind === "database" && item.label.toLowerCase() === qualifier);
     if (isDatabase) {
