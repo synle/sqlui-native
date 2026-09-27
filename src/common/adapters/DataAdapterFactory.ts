@@ -389,6 +389,44 @@ export function getDataAdapter(connection: string) {
 }
 
 /**
+ * Runs a deduplicated background cache refresh on its OWN adapter instance.
+ *
+ * The caller's adapter is disconnected in its `finally` block as soon as the caller
+ * returns, so a fire-and-forget refresh must never share it — it would race the
+ * disconnect and fail silently, leaving the cache stale forever.
+ * @param connectionString - The connection string used to create a dedicated adapter.
+ * @param refreshKey - The pending-refresh dedupe key.
+ * @param work - The refresh work, given the dedicated adapter.
+ * @param label - Label used when logging a failed refresh.
+ * @returns A promise settling when the refresh (and its disconnect) completes; never rejects.
+ */
+export function runBackgroundRefresh(
+  connectionString: string,
+  refreshKey: string,
+  work: (engine: IDataAdapter) => Promise<void>,
+  label: string,
+): Promise<void> | undefined {
+  if (pendingRefreshes.has(refreshKey)) {
+    return undefined;
+  }
+  addPendingRefresh(refreshKey);
+  return (async () => {
+    let engine: IDataAdapter | undefined;
+    try {
+      engine = getDataAdapter(connectionString);
+      await work(engine);
+    } catch (err) {
+      console.error(`DataAdapterFactory.ts:${label}`, err);
+    } finally {
+      if (engine) {
+        await safeDisconnect(engine);
+      }
+      pendingRefreshes.delete(refreshKey);
+    }
+  })();
+}
+
+/**
  * Fetches full metadata (databases, tables, columns) for a connection.
  * @param connection - The core connection properties including name, id, and connection string.
  * @returns Connection metadata with status ("online" or "offline") and nested database/table/column info.
@@ -414,16 +452,13 @@ export async function getConnectionMetaData(connection: SqluiCore.CoreConnection
       connItem.status = "online";
       // Background refresh databases only if stale (deduplicated)
       if (isCacheStale(cachedDatabasesEntry.timestamp)) {
-        const dbRefreshKey = getDatabaseCacheKey(connection.id!);
-        if (!pendingRefreshes.has(dbRefreshKey)) {
-          addPendingRefresh(dbRefreshKey);
-          const connId = connection.id!;
-          engine
-            .getDatabases()
-            .then((dbs) => setCachedDatabases(connId, dbs))
-            .catch((err) => console.error("DataAdapterFactory.ts:backgroundRefreshDatabases", err))
-            .finally(() => pendingRefreshes.delete(dbRefreshKey));
-        }
+        const connId = connection.id!;
+        runBackgroundRefresh(
+          connection.connection,
+          getDatabaseCacheKey(connId),
+          async (refreshEngine) => setCachedDatabases(connId, await refreshEngine.getDatabases()),
+          "backgroundRefreshDatabases",
+        );
       }
     } else {
       databases = await engine.getDatabases();
@@ -444,17 +479,14 @@ export async function getConnectionMetaData(connection: SqluiCore.CoreConnection
         database.tables = cachedTablesEntry.data;
         // Background refresh tables only if stale (deduplicated)
         if (isCacheStale(cachedTablesEntry.timestamp)) {
-          const tableRefreshKey = getTableCacheKey(connection.id!, database.name);
-          if (!pendingRefreshes.has(tableRefreshKey)) {
-            addPendingRefresh(tableRefreshKey);
-            const dbName = database.name;
-            const connId = connection.id!;
-            engine
-              .getTables(dbName)
-              .then((tables) => setCachedTables(connId, dbName, tables))
-              .catch((err) => console.error("DataAdapterFactory.ts:backgroundRefreshTables", err))
-              .finally(() => pendingRefreshes.delete(tableRefreshKey));
-          }
+          const dbName = database.name;
+          const connId = connection.id!;
+          runBackgroundRefresh(
+            connection.connection,
+            getTableCacheKey(connId, dbName),
+            async (refreshEngine) => setCachedTables(connId, dbName, await refreshEngine.getTables(dbName)),
+            "backgroundRefreshTables",
+          );
         }
       } else {
         uncachedDatabases.push(database);
