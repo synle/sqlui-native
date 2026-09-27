@@ -15,6 +15,8 @@ const SYSTEM_DATABASES = ["information_schema", "performance_schema", "mysql", "
 export default class MySQLDataAdapter extends BaseDataAdapter implements IDataAdapter {
   dialect?: SqluiCore.Dialect;
   private _pool?: mysql.Pool;
+  /** MySQL thread id of the connection currently running an `execute`; target of `cancel()`. */
+  private _activeThreadId?: number;
 
   /**
    * Creates a MySQLDataAdapter instance.
@@ -176,6 +178,7 @@ export default class MySQLDataAdapter extends BaseDataAdapter implements IDataAd
     const conn = await this.getConnection(database);
 
     try {
+      this._activeThreadId = conn.threadId ?? undefined;
       const [rawResult] = await conn.query(sql);
 
       if (Array.isArray(rawResult)) {
@@ -188,7 +191,32 @@ export default class MySQLDataAdapter extends BaseDataAdapter implements IDataAd
       console.error("MySQLDataAdapter:execute", error);
       return { ok: false, error };
     } finally {
+      this._activeThreadId = undefined;
       conn.release();
+    }
+  }
+
+  /**
+   * Cancels the running query with `KILL QUERY <threadId>` on a short-lived side
+   * connection (the pool is capped at one connection, which is busy). The query then
+   * fails with ER_QUERY_INTERRUPTED while the session itself stays alive.
+   * @returns True when a cancel was issued, false when no query was running.
+   */
+  async cancel(): Promise<boolean> {
+    const threadId = this._activeThreadId;
+    if (threadId === undefined) {
+      return false;
+    }
+    let connectionUrl = this.connectionOption;
+    if (this.dialect === "mariadb") {
+      connectionUrl = connectionUrl.replace("mariadb://", "mysql://");
+    }
+    const side = await mysql.createConnection({ uri: connectionUrl, connectTimeout: MAX_CONNECTION_TIMEOUT });
+    try {
+      await side.query("KILL QUERY ?", [threadId]);
+      return true;
+    } finally {
+      await side.end().catch((err) => console.error("MySQLDataAdapter:cancel", err));
     }
   }
 }

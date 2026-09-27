@@ -41,4 +41,11 @@ export default interface IDataAdapter {
    * Must NOT be called internally by adapter methods — only by the caller (Endpoints.ts, DataAdapterFactory, or tests).
    */
   disconnect: () => Promise<void>;
+  /**
+   * Optional: asks the server to abort the query currently running through this adapter.
+   * The in-flight `execute` then settles with a failed result (errorKind `cancelled`).
+   * Must not disconnect the adapter — the caller still owns cleanup.
+   * @returns True when a cancel was sent; false when nothing was running.
+   */
+  cancel?: () => Promise<boolean>;
 }

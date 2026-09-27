@@ -16,6 +16,8 @@ const SYSTEM_DATABASES = ["template0", "template1"];
 export default class PostgresDataAdapter extends BaseDataAdapter implements IDataAdapter {
   dialect?: SqluiCore.Dialect;
   private _clients: Map<string, pg.Client> = new Map();
+  /** Client currently running an `execute` query; target of `cancel()`. */
+  private _activeClient?: pg.Client;
 
   /**
    * Creates a PostgresDataAdapter instance.
@@ -203,6 +205,7 @@ export default class PostgresDataAdapter extends BaseDataAdapter implements IDat
     const client = await this.getClient(database);
 
     try {
+      this._activeClient = client;
       const result = await client.query(sql);
 
       if (result.rows && result.rows.length > 0) {
@@ -215,6 +218,28 @@ export default class PostgresDataAdapter extends BaseDataAdapter implements IDat
     } catch (error) {
       console.error("PostgresDataAdapter:execute", error);
       return { ok: false, error };
+    } finally {
+      this._activeClient = undefined;
+    }
+  }
+
+  /**
+   * Cancels the running query via `pg_cancel_backend` on a short-lived side connection
+   * (the busy client cannot accept another command). The query then fails with SQLSTATE 57014.
+   * @returns True when a cancel was issued, false when no query was running.
+   */
+  async cancel(): Promise<boolean> {
+    const pid = (this._activeClient as any)?.processID;
+    if (!pid) {
+      return false;
+    }
+    const side = new pg.Client({ connectionString: this.connectionOption, connectionTimeoutMillis: MAX_CONNECTION_TIMEOUT });
+    try {
+      await side.connect();
+      await side.query("SELECT pg_cancel_backend($1)", [pid]);
+      return true;
+    } finally {
+      await side.end().catch((err) => console.error("PostgresDataAdapter:cancel", err));
     }
   }
 }

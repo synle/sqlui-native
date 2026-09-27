@@ -6,6 +6,7 @@ import InfoIcon from "@mui/icons-material/Info";
 import MenuIcon from "@mui/icons-material/Menu";
 import SaveIcon from "@mui/icons-material/Save";
 import SendIcon from "@mui/icons-material/Send";
+import StopIcon from "@mui/icons-material/Stop";
 import UnfoldLessIcon from "@mui/icons-material/UnfoldLess";
 import UnfoldMoreIcon from "@mui/icons-material/UnfoldMore";
 import LoadingButton from "@mui/lab/LoadingButton";
@@ -168,6 +169,9 @@ function QueryBox(props: QueryBoxProps): React.JSX.Element | null {
   const { queryId } = props;
   const editorRef = useRef<EditorRef>(null);
   const executionIdRef = useRef(0);
+  /** Server-side handle of the execution in flight, used by the Stop button. */
+  const runningExecutionRef = useRef<{ connectionId: string; executionId: string } | undefined>(undefined);
+  const [cancelling, setCancelling] = useState(false);
   const { query, onChange, isLoading: loadingConnection } = useConnectionQuery(queryId);
   const { mutateAsync: executeQuery } = useExecute();
   const [executing, setExecuting] = useState(false);
@@ -464,8 +468,13 @@ function QueryBox(props: QueryBoxProps): React.JSX.Element | null {
       },
     });
 
+    const serverExecutionId = crypto.randomUUID();
+    runningExecutionRef.current = queryToExecute.connectionId
+      ? { connectionId: queryToExecute.connectionId, executionId: serverExecutionId }
+      : undefined;
+
     try {
-      newResult = await executeQuery(queryToExecute);
+      newResult = await executeQuery({ ...queryToExecute, executionId: serverExecutionId });
 
       // only apply results if this is still the latest execution
       if (currentExecutionId !== executionIdRef.current) {
@@ -486,10 +495,51 @@ function QueryBox(props: QueryBoxProps): React.JSX.Element | null {
         return;
       }
     }
+    runningExecutionRef.current = undefined;
     setExecuting(false);
 
     const executionEnd = Date.now();
     onChange({ executing: false, executionEnd });
+  };
+
+  /**
+   * Stops the running query. Asks the server to cancel it; when the adapter can cancel,
+   * the pending execute settles on its own with a `cancelled` error. When it cannot
+   * (unsupported dialect, or the run already finished), the result is abandoned client-side
+   * and the server query may keep running to completion.
+   */
+  const onCancel = async () => {
+    const running = runningExecutionRef.current;
+    if (!running || cancelling) {
+      return;
+    }
+    setCancelling(true);
+    let outcome: string = "error";
+    try {
+      outcome = (await ProxyApi.cancelExecution(running.connectionId, running.executionId)).outcome;
+    } catch (err) {
+      console.error("QueryBox:onCancel", err);
+    } finally {
+      setCancelling(false);
+    }
+
+    if (outcome === "cancelled" || runningExecutionRef.current !== running) {
+      return;
+    }
+
+    // Server could not cancel — abandon this run so the UI is usable again.
+    executionIdRef.current++;
+    runningExecutionRef.current = undefined;
+    setExecuting(false);
+    onChange({
+      executing: false,
+      executionEnd: Date.now(),
+      result: {
+        ok: false,
+        error: "Query abandoned. This connection type does not support server-side cancel, so the query may still be running on the server.",
+        errorKind: "cancelled",
+      },
+    });
   };
 
   const onShowMigrationForThisDatabaseAndTable = () => {
@@ -578,6 +628,22 @@ function QueryBox(props: QueryBoxProps): React.JSX.Element | null {
           >
             Execute
           </LoadingButton>
+          {isExecuting && (
+            <Tooltip title="Stop the running query.">
+              <LoadingButton
+                id="btnCancelExecution"
+                type="button"
+                variant="outlined"
+                color="error"
+                loading={cancelling}
+                onClick={onCancel}
+                startIcon={<StopIcon />}
+                size="small"
+              >
+                Stop
+              </LoadingButton>
+            </Tooltip>
+          )}
           {expanded && (
             <>
               <Tooltip title="Click here to see how to get started with some queries.">

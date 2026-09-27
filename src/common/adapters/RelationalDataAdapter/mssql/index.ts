@@ -29,6 +29,8 @@ export function escapeSqlStringLiteral(value: string): string {
 export default class MSSQLDataAdapter extends BaseDataAdapter implements IDataAdapter {
   dialect?: SqluiCore.Dialect;
   private _connection?: Connection;
+  /** Connection currently running an `execute`; target of `cancel()`. */
+  private _activeConnection?: Connection;
 
   /**
    * Creates a MSSQLDataAdapter instance.
@@ -317,6 +319,7 @@ export default class MSSQLDataAdapter extends BaseDataAdapter implements IDataAd
     }
 
     try {
+      this._activeConnection = connection;
       const { rows, rowCount } = await this.execQuery(sql, connection);
 
       if (rows.length > 0) {
@@ -328,9 +331,22 @@ export default class MSSQLDataAdapter extends BaseDataAdapter implements IDataAd
       console.error("MSSQLDataAdapter:execute", error);
       return { ok: false, error };
     } finally {
+      this._activeConnection = undefined;
       if (isTemporary) {
         connection.close();
       }
     }
+  }
+
+  /**
+   * Cancels the running request via a TDS attention signal (tedious `Connection.cancel`).
+   * The request then fails with code ECANCEL.
+   * @returns True when a cancel was issued, false when no query was running.
+   */
+  async cancel(): Promise<boolean> {
+    if (!this._activeConnection) {
+      return false;
+    }
+    return this._activeConnection.cancel();
   }
 }

@@ -241,17 +241,32 @@ export class ProxyApi {
   /**
    * Executes a SQL/NoSQL query against a connection.
    * @param query - The query to execute, including connection, database, and SQL.
+   * @param executionId - Optional client-generated id; lets a later `cancelExecution` target this run.
    * @returns The query execution result.
    */
-  static execute(query?: SqluiFrontend.ConnectionQuery) {
+  static execute(query?: SqluiFrontend.ConnectionQuery, executionId?: string) {
     return _fetch<SqluiCore.Result>(`/api/connection/${query?.connectionId}/execute`, {
       method: "post",
       body: JSON.stringify({
         sql: query?.sql,
         database: query?.databaseId,
         table: query?.tableId,
+        executionId,
       }),
     });
+  }
+
+  /**
+   * Asks the server to cancel a running execution started with the same `executionId`.
+   * @param connectionId - The connection the query runs against.
+   * @param executionId - The id passed to `execute`.
+   * @returns `outcome`: `cancelled`, `not_found`, `unsupported` (adapter cannot cancel), or `idle`.
+   */
+  static cancelExecution(connectionId: string, executionId: string) {
+    return _fetch<{ ok: boolean; outcome: "cancelled" | "not_found" | "unsupported" | "idle" }>(
+      `/api/connection/${encodeURIComponent(connectionId)}/execute/${encodeURIComponent(executionId)}/cancel`,
+      { method: "post" },
+    );
   }
 
   /**

@@ -26,6 +26,7 @@ import {
 } from "src/common/PersistentStorage";
 import { writeDebugLog } from "src/common/utils/debugLogger";
 import { backfillTimestamps, classifyError, formatErrorMessage, safeDisconnect } from "src/common/utils/errorUtils";
+import { cancelExecution, isValidExecutionId, registerExecution, unregisterExecution } from "src/common/utils/inFlightExecutions";
 import { SqluiCore, SqluiEnums } from "typings";
 let honoAppContext: Hono | undefined;
 
@@ -606,14 +607,42 @@ export function setUpDataEndpoints(aHonoAppContext: Hono) {
     if ("connectionId" in engine) {
       (engine as any).connectionId = req.params?.connectionId;
     }
+    const connectionId: string = req.params?.connectionId;
+    const executionId = isValidExecutionId(req.body?.executionId) ? req.body.executionId : undefined;
+    if (executionId) {
+      registerExecution(connectionId, executionId, engine);
+    }
     try {
-      res.status(200).json(await engine.execute(req.body?.sql, req.body?.database, req.body?.table));
+      const result: SqluiCore.Result = await engine.execute(req.body?.sql, req.body?.database, req.body?.table);
+      // Most adapters report failures as a returned `{ ok: false, error }` rather than throwing.
+      if (result && result.ok === false && !result.errorKind) {
+        result.errorKind = classifyError(result.error);
+      }
+      res.status(200).json(result);
     } catch (err: any) {
       const message = formatErrorMessage(err, "Query execution failed");
       console.error("Endpoints.ts:execute", err);
       res.status(200).json({ ok: false, error: message, errorKind: classifyError(err) });
     } finally {
+      if (executionId) {
+        unregisterExecution(connectionId, executionId);
+      }
       await safeDisconnect(engine);
+    }
+  });
+
+  addDataEndpoint("post", "/api/connection/:connectionId/execute/:executionId/cancel", async (req, res) => {
+    const connectionId: string = req.params?.connectionId;
+    const executionId: string = req.params?.executionId;
+    if (!isValidExecutionId(executionId)) {
+      return res.status(400).send("Invalid executionId");
+    }
+    try {
+      const outcome = await cancelExecution(connectionId, executionId);
+      res.status(200).json({ ok: outcome === "cancelled", outcome });
+    } catch (err: any) {
+      console.error("Endpoints.ts:handler [POST /api/connection/:connectionId/execute/:executionId/cancel]", err);
+      res.status(500).json({ ok: false, outcome: "error", error: formatErrorMessage(err, "Cancel failed") });
     }
   });
 

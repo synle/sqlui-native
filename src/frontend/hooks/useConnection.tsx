@@ -187,13 +187,22 @@ export function useImportConnection() {
   };
 }
 
+/** Query to execute, optionally tagged with a client-generated id so it can be cancelled. */
+export type ExecutableQuery = SqluiFrontend.ConnectionQuery & { executionId?: string };
+
 /**
  * Hook to execute a SQL/NoSQL query against a connection.
- * @returns Mutation that accepts a ConnectionQuery and returns the result.
+ * @returns Mutation that accepts a ConnectionQuery (plus optional `executionId`) and returns the result.
  */
 export function useExecute() {
-  return useMutation<SqluiCore.Result, void, SqluiFrontend.ConnectionQuery>({
-    mutationFn: (query?: SqluiFrontend.ConnectionQuery) => dataApi.execute(query),
+  return useMutation<SqluiCore.Result, void, ExecutableQuery>({
+    mutationFn: (query?: ExecutableQuery) => {
+      if (!query) {
+        return dataApi.execute(query);
+      }
+      const { executionId, ...rest } = query;
+      return dataApi.execute(rest, executionId);
+    },
   });
 }
 

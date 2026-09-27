@@ -130,6 +130,7 @@ All database engines implement `IDataAdapter` (authenticate, getDatabases, getTa
 Key rules:
 
 - `disconnect()` is the SOLE cleanup method — **never** call it internally within adapter methods. Called exclusively by the caller in `finally` blocks.
+- `cancel()` is optional (postgres, mysql/mariadb, mssql implement it). It aborts the query running in `execute` via a side channel and must never disconnect. The execute endpoint registers each run by client-supplied `executionId` in `src/common/utils/inFlightExecutions.ts`; `POST /api/connection/:connectionId/execute/:executionId/cancel` looks it up.
 - **Persistent Storage factory functions** (`getConnectionsStorage`, `getQueryStorage`, etc.) must always be used — never instantiate `PersistentStorage` / `PersistentStorageSqlite` directly.
 
 ### Adding a New Database Adapter
