@@ -1,3 +1,4 @@
+import type { CompletionColumnsByTable } from "src/frontend/utils/sqlCompletionContext";
 import CheckBoxIcon from "@mui/icons-material/CheckBox";
 import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
 import Box from "@mui/material/Box";
@@ -64,6 +65,8 @@ export type CodeEditorProps = {
   /** Custom language options for the syntax dropdown. Defaults to ["javascript", "sql"]. */
   languageOptions?: { value: string; label: string }[];
   completionItems?: CompletionItem[];
+  /** Cached columns per table; lets SQL autocomplete resolve `alias.` to the right table's columns. */
+  completionColumnsByTable?: CompletionColumnsByTable;
   /** Variables for {{VAR}} highlighting, hover tooltips, and autocomplete in the editor. */
   variables?: EditorVariable[];
   /** Debounce delay in ms for live typing onChange calls. Defaults to 150, clamped to 1000 max. */
@@ -316,6 +319,7 @@ export default function CodeEditorBox(props: CodeEditorProps): React.JSX.Element
             required={props.required}
             editorRef={props.editorRef}
             completionItems={props.completionItems}
+            completionColumnsByTable={props.completionColumnsByTable}
             variables={props.variables}
           />
         </Suspense>

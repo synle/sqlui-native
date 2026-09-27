@@ -1,26 +1,19 @@
-/** Configures Monaco Editor ESM workers and re-exports the monaco-editor module. */
+/**
+ * Configures Monaco Editor ESM workers and re-exports the monaco-editor module.
+ *
+ * Only the JSON language service (validation, folding, formatting of result/settings JSON)
+ * is loaded. JavaScript/TypeScript and HTML use the Monarch grammars from
+ * `basic-languages/*` for highlighting; their language services were dropped because
+ * they ship a 7.0 MB `ts.worker` and a 695 kB `html.worker` for features the app does not
+ * use (`noLib` JS intellisense, HTML completion in read-only response viewers).
+ */
 import * as monaco from "monaco-editor/esm/vs/editor/editor.api";
 import "monaco-editor/esm/vs/editor/edcore.main";
 import * as jsonLanguage from "monaco-editor/esm/vs/language/json/monaco.contribution";
-import * as htmlLanguage from "monaco-editor/esm/vs/language/html/monaco.contribution";
-import * as typescriptLanguage from "monaco-editor/esm/vs/language/typescript/monaco.contribution";
 import "monaco-editor/esm/vs/basic-languages/sql/sql.contribution";
 import "monaco-editor/esm/vs/basic-languages/javascript/javascript.contribution";
 import "monaco-editor/esm/vs/basic-languages/graphql/graphql.contribution";
 import "monaco-editor/esm/vs/basic-languages/shell/shell.contribution";
-
-// edcore.main skips the language namespace assignments that editor.main does.
-// Re-assign them explicitly and configure TS/JS defaults.
-(monaco.languages as any).json = jsonLanguage;
-(monaco.languages as any).html = htmlLanguage;
-(monaco.languages as any).typescript = typescriptLanguage;
-
-// @ts-ignore — monaco types mark languages.typescript as deprecated but it works at runtime
-monaco.languages.typescript.javascriptDefaults.setCompilerOptions({
-  noLib: true,
-  allowNonTsExtensions: true,
-});
-
 import "monaco-editor/esm/vs/basic-languages/html/html.contribution";
 import "monaco-editor/esm/vs/basic-languages/css/css.contribution";
 import "monaco-editor/esm/vs/basic-languages/python/python.contribution";
@@ -29,14 +22,13 @@ import "monaco-editor/esm/vs/basic-languages/typescript/typescript.contribution"
 
 import editorWorker from "monaco-editor/esm/vs/editor/editor.worker?worker";
 import jsonWorker from "monaco-editor/esm/vs/language/json/json.worker?worker";
-import htmlWorker from "monaco-editor/esm/vs/language/html/html.worker?worker";
-import tsWorker from "monaco-editor/esm/vs/language/typescript/ts.worker?worker";
+
+// edcore.main skips the language namespace assignments that editor.main does.
+(monaco.languages as any).json = jsonLanguage;
 
 self.MonacoEnvironment = {
   getWorker(_workerId: string, label: string) {
     if (label === "json") return new jsonWorker();
-    if (label === "html" || label === "handlebars" || label === "razor") return new htmlWorker();
-    if (label === "typescript" || label === "javascript") return new tsWorker();
     return new editorWorker();
   },
 };

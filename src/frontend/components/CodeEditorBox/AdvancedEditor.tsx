@@ -10,6 +10,7 @@ import {
   takeCachedEditorModel,
 } from "src/frontend/components/CodeEditorBox/editorModelCache";
 import { useDarkModeSetting } from "src/frontend/hooks/useSetting";
+import { getContextualCompletions } from "src/frontend/utils/sqlCompletionContext";
 
 const AdvancedEditorContainer = styled("div")(() => {
   return {
@@ -178,8 +179,11 @@ export default function AdvancedEditor(props: AdvancedEditorProps): React.JSX.El
     };
 
     const language = props.language || "sql";
+    const isSql = language === "sql";
 
     const disposable = monaco.languages.registerCompletionItemProvider(language, {
+      // "." re-triggers suggestions so `alias.` lists that table's columns (SQL only).
+      triggerCharacters: isSql ? ["."] : [],
       provideCompletionItems(_model, position) {
         const word = _model.getWordUntilPosition(position);
         const range = {
@@ -189,7 +193,17 @@ export default function AdvancedEditor(props: AdvancedEditorProps): React.JSX.El
           endColumn: word.endColumn,
         };
 
-        const suggestions: monaco.languages.CompletionItem[] = (props.completionItems || []).map((item) => ({
+        const allItems = props.completionItems || [];
+        const items = isSql
+          ? getContextualCompletions(
+              _model.getValueInRange({ startLineNumber: 1, startColumn: 1, endLineNumber: position.lineNumber, endColumn: position.column }),
+              _model.getValue(),
+              allItems,
+              props.completionColumnsByTable,
+            )
+          : allItems;
+
+        const suggestions: monaco.languages.CompletionItem[] = items.map((item) => ({
           label: item.label,
           kind: kindMap[item.kind],
           detail: item.detail,
@@ -202,7 +216,7 @@ export default function AdvancedEditor(props: AdvancedEditorProps): React.JSX.El
     });
 
     return () => disposable.dispose();
-  }, [props.completionItems, props.language]);
+  }, [props.completionItems, props.completionColumnsByTable, props.language]);
 
   // {{VAR}} decorations — highlight variable placeholders in the editor
   useEffect(() => {

@@ -595,6 +595,7 @@ function QueryBox(props: QueryBoxProps): React.JSX.Element | null {
           autoFocus
           required
           completionItems={completionItems}
+          completionColumnsByTable={cachedSchema?.columns}
         />
         <div className="FormInput__Row" style={{ flexWrap: "nowrap" }}>
           {!expanded && (

@@ -90,10 +90,14 @@ describe("monacoSetup language coverage", () => {
     expect(monacoSetupSource).not.toContain("language/css/monaco.contribution");
   });
 
-  test("re-assigns the language namespaces that edcore.main skips", () => {
-    // App.tsx reads monaco.languages.typescript.javascriptDefaults; editor.main would set this up.
-    for (const namespace of ["json", "html", "typescript"]) {
-      expect(monacoSetupSource).toMatch(new RegExp(`languages as any\\)\\.${namespace}\\s*=`));
-    }
+  test("re-assigns the json language namespace that edcore.main skips", () => {
+    expect(monacoSetupSource).toMatch(/languages as any\)\.json\s*=/);
   });
+
+  test.each(["language/typescript/", "language/html/", "ts.worker?worker", "html.worker?worker"])(
+    "does not import %s, which would re-add a multi-hundred-kB worker chunk",
+    (fragment) => {
+      expect(monacoSetupSource).not.toContain(fragment);
+    },
+  );
 });
