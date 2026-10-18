@@ -234,10 +234,12 @@ When writing or modifying non-test source code, add **TSDoc** comments to all ex
 
 ## CI / Release Workflows
 
-Use `/release-official` and `/release-beta` skills for interactive triggering from Claude Code.
+Use the repo-local `/skill:release` workflow for triggering releases. This repository uses one unified release skill, not split official/beta skills or prompt commands.
 
-- **`release-official.yml`** — Delegates to `package.yml` for full release lifecycle (format, build, test, publish, deploy)
-- **`release-beta.yml`** — Standalone beta workflow using shared composite actions from `synle/workflows/actions/release/`
+- **Release routing** — every release request defaults to official. Use beta only when the user explicitly says beta, prerelease, or test release/build; never infer beta from branch, SHA, CI state, or uncertainty. The release skill proceeds without confirmation prompts.
+- **Release summary** — always summarize commits since the last non-draft, non-prerelease release for the user. Do not create or set a changeset, changelog, generated notes file, or custom `message` / `release_notes` / `notes` input; leave those inputs unset so the workflow generates its changelog.
+- **`release-official.yml`** — Delegates to `package.yml` for full release lifecycle (format, build, test, publish, deploy).
+- **`release-beta.yml`** — Standalone beta workflow using shared composite actions from `synle/workflows/actions/release/`; explicit opt-in only.
 
 ## Git / PR Merge Policy
 
