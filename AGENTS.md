@@ -232,9 +232,13 @@ When writing or modifying non-test source code, add **TSDoc** comments to all ex
 - **`@returns`** — describe what the caller gets back when not obvious from the return type.
 - **Migration note:** When touching a file with JSDoc-style comments, convert to TSDoc (remove `{type}` annotations).
 
+## Repo Skills
+
+Store every repo-local playbook under `.claude/skills/<name>/SKILL.md`. Migrate older `.claude/commands/` or flat `.claude/skills/<name>.md` files into that directory-based layout; do not add new command files.
+
 ## CI / Release Workflows
 
-Use the repo-local `/skill:release` workflow for triggering releases. This repository uses one unified release skill, not split official/beta skills or prompt commands.
+Use the repo-local `release` skill at `.claude/skills/release/SKILL.md` for triggering releases. This repository uses one unified release skill, not split official/beta skills or prompt commands.
 
 - **Release routing** — every release request defaults to official. Use beta only when the user explicitly says beta, prerelease, or test release/build; never infer beta from branch, SHA, CI state, or uncertainty. The release skill proceeds without confirmation prompts.
 - **Release summary** — always summarize commits since the last non-draft, non-prerelease release for the user. Do not create or set a changeset, changelog, generated notes file, or custom `message` / `release_notes` / `notes` input; leave those inputs unset so the workflow generates its changelog.
