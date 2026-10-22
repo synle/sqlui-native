@@ -1,6 +1,8 @@
 # AGENTS
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides guidance to coding agents working in this repository.
+
+Use `AGENTS.md` for repository and directory-specific agent context. If legacy context exists only as `CLAUDE.md`, rename it to `AGENTS.md`, preserve its guidance, and update references. If both files exist, reconcile their guidance into `AGENTS.md` without silently discarding either file's rules.
 
 ## Project Overview
 
@@ -22,7 +24,7 @@ npm run test-ci         # Run Vitest tests (CI, no watch)
 npm run lint            # ESLint with auto-fix
 npm run format          # oxfmt formatting
 npm run typecheck       # TypeScript type check (tsc --noEmit)
-npm run validate        # All checks: lint → typecheck → test-ci → format → e2e → smoke → integration
+npm run validate        # CI only: lint → typecheck → test-ci → format → e2e → smoke → integration
 ```
 
 **Run a single test file:**
@@ -170,7 +172,7 @@ Do NOT use `api.github.com/repos/.../contents/` or `raw.githubusercontent.com`.
 
 ## Pre-commit Checklist
 
-After **all** changes are complete, run `npm run validate` once. Do NOT run it after each atomic change.
+After **all** changes are complete, run `npm run lint && npm run typecheck && npm run test-ci && npm run format` once locally. Do NOT run it after each atomic change. Do not run E2E tests locally; leave them to CI. Reserve `npm run validate` for CI because it includes E2E tests.
 
 Additionally:
 
@@ -234,11 +236,11 @@ When writing or modifying non-test source code, add **TSDoc** comments to all ex
 
 ## Repo Skills
 
-Store every repo-local playbook under `.claude/skills/<name>/SKILL.md`. Migrate older `.claude/commands/` or flat `.claude/skills/<name>.md` files into that directory-based layout; do not add new command files.
+Store every repo-local playbook under `.agents/skills/<name>/SKILL.md` as the canonical, cross-agent skill source. Each skill must have its own kebab-case directory matching the `name` in its `SKILL.md` frontmatter. Migrate legacy agent-specific skill and command files into this layout; do not add duplicate copies or new command files.
 
 ## CI / Release Workflows
 
-Use the repo-local `release` skill at `.claude/skills/release/SKILL.md` for triggering releases. This repository uses one unified release skill, not split official/beta skills or prompt commands.
+Use the repo-local `release` skill at `.agents/skills/release/SKILL.md` for triggering releases. This repository uses one unified release skill, not split official/beta skills or prompt commands.
 
 - **Release routing** — every release request defaults to official. Use beta only when the user explicitly says beta, prerelease, or test release/build; never infer beta from branch, SHA, CI state, or uncertainty. The release skill proceeds without confirmation prompts.
 - **Release summary** — always summarize commits since the last non-draft, non-prerelease release for the user. Do not create or set a changeset, changelog, generated notes file, or custom `message` / `release_notes` / `notes` input; leave those inputs unset so the workflow generates its changelog.
