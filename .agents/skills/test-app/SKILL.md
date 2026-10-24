@@ -1,66 +1,55 @@
 ---
 name: test-app
-description: Manually test the app in 3 phases - dev server, Tauri dev mode, and bundled DMG. Use when validating that the app works end-to-end after changes.
-disable-model-invocation: true
-allowed-tools: Bash(npm *) Bash(node *) Bash(npx *) Bash(lsof *) Bash(kill *) Bash(open *) Bash(sleep *) Bash(gh *) Bash(ls *) Bash(tail *) Bash(cat *)
+description: Guide explicitly requested manual checks of browser development, Tauri development, and an existing bundled application. Pause for user confirmation between phases without publishing a release.
 ---
 
-# Manual App Testing (3 Phases)
+# Manual App Testing
 
-Run the app in each runtime mode, pausing for the user to manually verify after each phase. Wait for explicit user confirmation before moving to the next phase.
+Use this skill only when the user requests interactive manual testing. It does not authorize local automated E2E tests, publication, or stopping unrelated applications.
 
-## Phase 1: Dev Server (Browser Mode)
+Read `../../../AGENTS.md`, `../../../DEV.md`, and `../../../ARCHITECTURE.md` first. Run commands from the repository root.
 
-1. Kill any existing processes on ports 3000 and 3001:
-   ```
-   lsof -ti:3000,3001 | xargs kill -9 2>/dev/null
-   ```
-2. Build the sqlui-server if `build/sqlui-server.js` doesn't exist:
-   ```
-   npm run build-server
-   ```
-3. Start the sqlui-server (port 3001) in the background:
-   ```
-   node build/sqlui-server.js
-   ```
-4. Start the Vite dev server (port 3000) in the background:
-   ```
-   ENV_TYPE='browser' npx vite --config vite.frontend.config.ts --strictPort
-   ```
-5. Wait for both to be ready, then tell the user:
-   - Open http://localhost:3000/
-   - Verify: app loads, editor renders with syntax highlighting, typing and autocomplete work, no console errors
-6. **Wait for user signal** before proceeding.
-7. Kill processes on ports 3000 and 3001 before moving on.
+Run the phases in order and wait for explicit user confirmation before advancing.
 
-## Phase 2: Tauri (npm start)
+## Preparation
 
-1. Run `npm start` in the background (this triggers `npm run tauri:dev` and launches the Tauri dev window).
-2. Wait for the Tauri window to appear (monitor logs for successful startup).
-3. Tell the user:
-   - Verify: Tauri app loads, editor works, autocomplete works, no console errors
-4. **Wait for user signal** before proceeding.
+- Use a fresh disposable `SQLUI_HOME_DIR` for the test servers and application. Do not reuse the user's desktop or portal profile.
+- Inspect listeners on ports 3000 and 3001 before startup. The standalone server itself attempts to kill a listener on 3001.
+- If either port belongs to another task or user process, stop and ask rather than starting over it.
+- Start long-running commands in the background, capture logs, and record task-owned PIDs.
+- Stop only this task's processes between phases. Ask before stopping an existing user-owned application.
+- If startup fails, diagnose and fix the failure before asking the user to test.
 
-## Phase 3: Bundled DMG
+## Phase 1: Browser Development
 
-1. Check if a GitHub Actions release workflow is running for the current version. If not, trigger one:
-   ```
-   gh workflow run release-official.yml --ref main
-   ```
-2. Poll the workflow until the macOS ARM64 build job completes (check every 60 seconds).
-3. Find the release tag matching the version in `package.json`.
-4. Download the `sqlui-native-arm64.dmg` asset to `/tmp/`.
-5. Open the DMG:
-   ```
-   open /tmp/sqlui-native-arm64.dmg
-   ```
-6. Tell the user:
-   - Open the app from the DMG (drag to Applications or run directly)
-   - Verify: app loads, editor works, autocomplete works, no console errors
-7. **Wait for user signal** for final confirmation.
+1. Start `npm run dev` from the repository root with the disposable storage environment. Its predev hook prepares generated metadata.
+2. Wait for both Hono and Vite to report readiness.
+3. Ask the user to open `http://localhost:3000/`.
+4. Request checks for app loading, editor rendering, highlighting, typing, autocomplete, and console errors.
+5. Wait for the user's result and explicit signal to proceed.
+6. Stop the task-owned development processes before Phase 2.
 
-## Important
+## Phase 2: Tauri Development
 
-- After each phase, clearly tell the user it's ready and what to test.
-- Do NOT proceed to the next phase until the user explicitly says to move on.
-- If any phase fails to start, diagnose the issue and fix it before asking the user to test.
+1. Start `npm start` in the background with the same isolated storage configuration.
+2. Wait for the Tauri development window and backend readiness.
+3. Request checks for app loading, editor typing, autocomplete, and console errors.
+4. Wait for the user's result and explicit signal to proceed.
+5. Close the task-owned development application and servers before Phase 3.
+
+## Phase 3: Existing Bundled Application
+
+1. Find an existing artifact for the intended version and host architecture. Do not hard-code ARM64.
+2. On macOS, use the matching DMG; on other platforms, use the matching native package.
+3. Follow `../install-app/SKILL.md` for installation safety, backup, and macOS quarantine handling.
+4. Launch the application with the disposable storage environment and verify the effective profile before creating connections.
+5. Request checks for app loading, editor typing, autocomplete, and console errors.
+6. Wait for final user confirmation.
+
+If the requested artifact does not exist, report that phase as blocked. Do not dispatch an official or beta release to manufacture a test artifact.
+
+A separately authorized release follows `../release/SKILL.md`. A separately authorized local packaging run follows `../../../DEV.md`.
+
+## Completion
+
+Report each phase as passed, failed, blocked, or not run, based on startup evidence and the user's actual confirmation. Include remaining task-owned processes and the disposable storage path.

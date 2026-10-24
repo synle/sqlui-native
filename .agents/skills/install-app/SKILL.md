@@ -1,136 +1,61 @@
 ---
 name: install-app
-description: Kill running instances, download the latest release artifact, install it locally, and launch the app. Handles macOS (DMG + xattr) and detects the right architecture automatically.
-disable-model-invocation: true
-allowed-tools: Bash(gh *) Bash(hdiutil *) Bash(cp *) Bash(xattr *) Bash(open *) Bash(rm *) Bash(ls *) Bash(uname *) Bash(cat *) Bash(pkill *) Bash(kill *) Bash(lsof *) Bash(ps *) Bash(sleep *)
+description: Download an existing SQLUI Native release for the current OS and architecture, install it locally, and launch it. Use when the user requests installation rather than publication.
 ---
 
-# Install App from Latest Release
+# Install App from an Existing Release
 
-Kill any running sqlui-native processes, download, install, and launch from the latest GitHub release.
+Install an existing release without triggering a build or release workflow. Follow global secret-handling and destructive-operation rules.
 
-## Steps
+## Preconditions
 
-### 0. Kill all running sqlui-native processes
+1. Resolve the repository identity from GitHub or its remote; do not infer it from the checkout directory.
+2. Detect the operating system and architecture.
+3. Inspect the latest release and its actual asset list. If the default lookup fails, list releases and select the latest non-draft release.
+4. Match the artifact to the OS and architecture; do not silently fall back to an arbitrary DMG or installer.
+5. If the expected artifact is missing, show available assets and ask which one to use.
+6. Create a task-specific download directory. Track exact downloaded paths and mounted volumes rather than using shared-directory wildcards.
 
-This MUST run first to ensure a clean install. Kill the app, the sidecar server, and any related Node.js processes:
+## Stop the Target Installation
 
-```bash
-# Kill the Tauri app
-pkill -f "sqlui-native" 2>/dev/null
-osascript -e 'quit app "sqlui-native"' 2>/dev/null
+Stop the application being replaced before installation. Identify its executable path and PID, then establish which child sidecar belongs to it.
 
-# Kill any sqlui-server sidecar processes
-pkill -f "sqlui-server" 2>/dev/null
+Ask before stopping user-owned processes that this task did not create. Prefer a normal application quit and wait for the sidecar's parent-death shutdown.
 
-# Kill any node processes running our server on common ports
-lsof -ti tcp:3001 2>/dev/null | xargs kill -9 2>/dev/null
+If shutdown fails, inspect the specific remaining PID and request approval before forced termination. Never kill by name, kill every Node process, or terminate an unknown listener on port 3001.
 
-# Wait for processes to exit
-sleep 2
+## macOS
 
-# Verify nothing is left
-ps aux | grep -E "sqlui-native|sqlui-server" | grep -v grep && echo "WARNING: processes still running" || echo "All clean"
-```
+1. Download the matching DMG and mount that exact file without opening unrelated volumes.
+2. Record the mount path returned by the mount command. Locate `sqlui-native.app` inside that mounted volume.
+3. If `/Applications/sqlui-native.app` exists, preserve a recoverable backup before replacing it. Ask before deleting or overwriting an untracked installation.
+4. Copy the new app to `/Applications/`.
+5. Detach only the volume mounted by this task.
+6. Strip quarantine from the installed unsigned application:
 
-### 1. Detect the current platform and architecture
+   ```bash
+   xattr -cr "/Applications/sqlui-native.app"
+   ```
 
-```
-uname -s   # Darwin = macOS, Linux, MINGW/MSYS = Windows
-uname -m   # arm64 = Apple Silicon, x86_64 = Intel
-```
+7. Launch the installed app:
 
-### 2. Get the latest release tag
+   ```bash
+   open /Applications/sqlui-native.app
+   ```
 
-```
-gh release view --json tagName --jq .tagName
-```
+8. Confirm startup before treating installation as successful. Keep the backup available for rollback if the new app fails.
+9. Clean up only exact task-owned download paths, with the required destructive-action approval. Never delete a wildcard of shared temporary files.
 
-If no release is found, list available releases and pick the latest non-draft one:
+## Windows
 
-```
-gh release list --limit 10
-```
+Download the matching `.exe` installer and tell the user which exact file to run. Do not claim installation succeeded before the user confirms completion.
 
-### 3. macOS
+## Linux
 
-- Download the correct `.dmg` based on architecture. Try these patterns in order:
-  - `*arm64.dmg` or `*aarch64.dmg` (Apple Silicon)
-  - `*x64.dmg` or `*x86_64.dmg` (Intel)
-  - Fall back to any `.dmg` if architecture-specific one isn't found.
+Download the matching `.deb` for Debian-based systems or AppImage for other distributions. Obtain approval for privileged installation and target only the downloaded file.
 
-```
-gh release download <tag> --pattern "*.dmg" --dir /tmp
-```
+If installation requires interaction or privileges unavailable to the agent, give the user the exact artifact path and report installation as pending.
 
-- If multiple DMGs downloaded, pick the right one for the arch.
+## Completion
 
-- Mount the DMG:
-
-```
-hdiutil attach /tmp/<name>.dmg -nobrowse
-```
-
-- Find the mounted volume (name varies by version):
-
-```
-ls /Volumes/ | grep -i sqlui
-```
-
-- Copy to Applications (overwrite existing):
-
-```
-rm -rf "/Applications/sqlui-native.app"
-cp -R "/Volumes/<volume-name>/sqlui-native.app" /Applications/
-```
-
-- Unmount the DMG:
-
-```
-hdiutil detach "/Volumes/<volume-name>"
-```
-
-- Strip quarantine attribute:
-
-```
-xattr -cr "/Applications/sqlui-native.app"
-```
-
-- Clean up:
-
-```
-rm -f /tmp/sqlui-native*.dmg
-```
-
-- Launch the app:
-
-```
-open /Applications/sqlui-native.app
-```
-
-### 4. Windows
-
-- Download the `.exe` installer:
-
-```
-gh release download <tag> --pattern "*.exe" --dir /tmp
-```
-
-- Tell the user to run the installer.
-
-### 5. Linux
-
-- Download the `.deb` (or `.AppImage` for non-Debian distros):
-
-```
-gh release download <tag> --pattern "*.deb" --dir /tmp
-```
-
-- Install with `sudo dpkg -i /tmp/*.deb` or tell the user to run the AppImage.
-
-## Important
-
-- Always kill running instances FIRST before installing.
-- Always tell the user which version and architecture was installed.
-- If the expected artifact is missing from the release, list available assets and ask which one to use.
-- On macOS, the `xattr` step is mandatory — the app will not launch without it.
+Report the release version, OS, architecture, installation path, launch result, and any retained backup or pending user action. Never report a download alone as a completed installation.

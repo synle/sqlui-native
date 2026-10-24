@@ -1,5 +1,9 @@
 # Contributing / Dev Guide
 
+Read [DEV.md](DEV.md) for current commands, packaging, and check procedures. Read [ARCHITECTURE.md](ARCHITECTURE.md) for runtime flows and [AGENTS.md](AGENTS.md) for repository rules.
+
+This guide covers database fixtures, adapter development, and dialect-specific runbooks.
+
 ## Bootstrap script for connections
 
 ### Requirement
@@ -194,57 +198,23 @@ npm run dev     # Browser mode — http://localhost:3000
 
 ### Tauri Sidecar Lifecycle
 
-In production (Tauri) mode, the backend runs as a Node.js sidecar process managed by the Rust host. Understanding this lifecycle is important when debugging bundled app issues.
-
-#### Startup Sequence
-
-1. Tauri (Rust) calls `spawn_sidecar()` which finds the system `node` binary and launches `node sqlui-server.js` with `SIDECAR_PORT=0` and `stdin` kept open (`Stdio::piped()`).
-2. The Node.js server detects `SIDECAR_PORT=0` and calls `startSidecar()` which binds to port `0` — the OS assigns a random available port.
-3. Once listening, the sidecar prints `__SIDECAR_PORT__=<port>` to stdout.
-4. The Rust host reads stdout line by line, parses the port from the `__SIDECAR_PORT__=` marker, and stores it in `SidecarState`.
-5. The frontend calls the `get_sidecar_port` Tauri command to discover the port, then makes all API requests to `http://127.0.0.1:<port>`.
-
-#### Parent-Death Detection (Graceful Shutdown)
-
-The sidecar monitors `stdin` — when the Tauri process exits (user closes the window, crash, etc.), the stdin pipe closes. The sidecar detects this and shuts down gracefully:
-
-```
-process.stdin.resume();
-process.stdin.on("end", () => gracefulShutdown(server, "stdin closed (parent exited)"));
-```
-
-This avoids orphaned Node.js processes that would otherwise keep running in the background and hold the port. The sidecar also listens for `SIGTERM` and `SIGINT` signals as fallbacks.
-
-#### Standalone Mode (Browser Dev)
-
-When `SIDECAR_PORT` is not set (i.e., running via `npm run dev`), the server starts in standalone mode on the default port 3001. In this mode, there is no stdin monitoring — the server runs until manually stopped.
-
-#### Key Files
-
-| File                                  | Role                                                                                                    |
-| ------------------------------------- | ------------------------------------------------------------------------------------------------------- |
-| `src/sqlui-server/index.ts`           | Server entry point — `startSidecar()` vs `startStandalone()` branching, port protocol, stdin monitoring |
-| `src-tauri/src/lib.rs`                | Rust host — `spawn_sidecar()`, `find_system_node()`, stdout parsing, `get_sidecar_port` command         |
-| `vite.sqlui-server.sidecar.config.ts` | Bundles all JS dependencies into a single `sqlui-server.js` for the sidecar                             |
+See [ARCHITECTURE.md](ARCHITECTURE.md#packaged-desktop) for bundled Node selection, dynamic-port discovery, the startup deadline, and parent-death shutdown.
 
 ### To package
 
+Run from the repository root:
+
 ```bash
-npm run build
-cd build
-npm install
 npm run dist
 ```
 
+Tauri's before-build hook prepares the frontend, sidecar, resources, and bundled Node runtime. Do not install dependencies inside `build/`; see [DEV.md](DEV.md#build-and-package).
+
 ### Where is the config / data stored on local machine?
 
-```bash
-# Windows
-C:\Users\some_username\AppData\Roaming\sqlui-native
+Desktop storage defaults to `~/.sqlui-native/`; portal storage defaults to `~/.sqlui-portal/`. `SQLUI_HOME_DIR` and portal CLI options can override these locations.
 
-# Mac
-cd ~/Library/Application\ Support/sqlui-native/
-```
+The directory resolves lazily on first storage use and is then cached. See [ARCHITECTURE.md](ARCHITECTURE.md#portal) for precedence and [DEV.md](DEV.md#data-and-process-safety) before manual testing.
 
 ## Sample Databases
 
@@ -354,21 +324,17 @@ Integration tests are excluded from `npm run test-ci` and only run via `npm run 
 
 ## Code Coverage
 
-Two independent coverage gates run in CI and both must stay green for a build to pass. **Do not hard-code numbers in docs — bump the configs.**
+JS/TS and Rust have separate CI coverage gates. Keep numeric floors in their configuration, not duplicated in documentation; never lower floors without an explicit reason.
 
-### Frontend / JS-TS (Vitest + V8)
+See [DEV.md](DEV.md#coverage-ownership) for config/workflow ownership, report locations, platform limits, and the existing JS/TS reporting-baseline mismatch.
 
-- **Config:** `vitest.config.ts` — `test.coverage.thresholds` block sets `statements` / `branches` / `functions` / `lines` minimums.
-- **CI runner:** `.github/workflows/build-main.yml` and `.github/workflows/integration-test.yml` invoke `vitest run --coverage.enabled` and mirror the same baselines as `MIN_STATEMENTS` / `MIN_BRANCHES` / `MIN_FUNCTIONS` / `MIN_LINES` env vars to render a step-summary table. **Vitest is the enforcement gate**; the bash check is defense-in-depth.
-- **Local:** `npx vitest run --coverage.enabled` (writes `coverage/coverage-summary.json` and an HTML report under `coverage/`).
-- **Raising the floor:** Update the numbers in **both** places — `vitest.config.ts` AND the `MIN_*` env vars in the two workflows. Never lower without an explicit reason.
+For a local JS/TS coverage run:
 
-### Rust / Tauri (`cargo-llvm-cov`)
+```bash
+npx vitest run --coverage.enabled
+```
 
-- **Runner:** `rust_unit_tests` job in `.github/workflows/integration-test.yml` runs `cargo llvm-cov --lib --no-report` against `src-tauri/` and enforces `MIN_LINES` / `MIN_REGIONS` / `MIN_FUNCTIONS`. JSON summary at `src-tauri/rust-coverage.json` is uploaded as the `rust-coverage` artifact alongside an LCOV file.
-- **Scope:** `src-tauri/src/**/*.rs`, `--lib` target only. Code gated by `#[cfg(not(debug_assertions))]` or `#[cfg(target_os = ...)]` is **not** compiled into the test profile and is therefore unmeasured.
-- **Local:** `cd src-tauri && cargo llvm-cov --lib report --summary-only` (install `cargo-llvm-cov` first).
-- **Raising the floor:** Update the `MIN_*` env vars in `.github/workflows/integration-test.yml`.
+The configured reporters produce text, `coverage/coverage-summary.json`, and JSON coverage data; they do not currently include an HTML reporter.
 
 ## Adding new adapters?
 
