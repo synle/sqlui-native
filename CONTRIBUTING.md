@@ -475,7 +475,7 @@ npm run lint                                # check for lint errors (must have 0
 npm run typecheck                           # TypeScript type check (must have 0 errors)
 npm run test-ci                             # run unit tests (all tests must pass)
 npx vitest run --coverage.enabled           # confirm coverage stays above the thresholds in vitest.config.ts
-npm run format                              # oxfmt formatting (always run LAST)
+npm run format                              # oxfmt and rustfmt formatting (always run LAST)
 npm start                                   # test in Tauri dev mode -- try adding a connection with your dialect
 ```
 

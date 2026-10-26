@@ -8,9 +8,9 @@ use serde::Serialize;
 use std::io::BufRead;
 #[cfg(all(not(debug_assertions), target_os = "windows"))]
 use std::os::windows::process::CommandExt;
-use std::process::{Child, Command};
 #[cfg(not(debug_assertions))]
 use std::process::Stdio;
+use std::process::{Child, Command};
 use std::sync::Mutex;
 use std::time::{Duration, Instant};
 use tauri::menu::{MenuBuilder, MenuItemBuilder, PredefinedMenuItem, SubmenuBuilder};
@@ -83,7 +83,6 @@ fn read_file_content(path: String) -> Result<String, String> {
     std::fs::read_to_string(&path).map_err(|e| format!("Failed to read file {}: {}", path, e))
 }
 
-
 #[cfg(not(debug_assertions))]
 /// Searches for a working `node` binary outside the default PATH.
 /// GUI apps on macOS/Linux don't inherit shell rc files, so version managers
@@ -92,7 +91,10 @@ fn read_file_content(path: String) -> Result<String, String> {
 fn find_system_node() -> Option<String> {
     // 1. Try the bare command first (works when PATH is correct, e.g. dev mode)
     let mut probe = Command::new("node");
-    probe.arg("--version").stdout(Stdio::null()).stderr(Stdio::null());
+    probe
+        .arg("--version")
+        .stdout(Stdio::null())
+        .stderr(Stdio::null());
     #[cfg(target_os = "windows")]
     probe.creation_flags(CREATE_NO_WINDOW);
     if probe.status().map(|s| s.success()).unwrap_or(false) {
@@ -147,7 +149,10 @@ fn find_system_node() -> Option<String> {
     for candidate in candidates.iter().chain(extra.iter()) {
         if candidate.exists() {
             let mut probe = Command::new(candidate);
-            probe.arg("--version").stdout(Stdio::null()).stderr(Stdio::null());
+            probe
+                .arg("--version")
+                .stdout(Stdio::null())
+                .stderr(Stdio::null());
             #[cfg(target_os = "windows")]
             probe.creation_flags(CREATE_NO_WINDOW);
             if let Ok(status) = probe.status() {
@@ -174,9 +179,13 @@ fn spawn_sidecar(app: &tauri::App) -> Result<SidecarState, Box<dyn std::error::E
     let node_modules = resource_dir.join("resources").join("node_modules");
 
     // Prefer bundled Node.js binary in resources/, fall back to system Node.js
-    let bundled_node = resource_dir.join("resources").join(
-        if cfg!(target_os = "windows") { "node.exe" } else { "node" }
-    );
+    let bundled_node = resource_dir
+        .join("resources")
+        .join(if cfg!(target_os = "windows") {
+            "node.exe"
+        } else {
+            "node"
+        });
     let node_cmd = if bundled_node.exists() {
         println!("Sidecar: using bundled node at {}", bundled_node.display());
         bundled_node.to_string_lossy().to_string()
@@ -199,16 +208,14 @@ fn spawn_sidecar(app: &tauri::App) -> Result<SidecarState, Box<dyn std::error::E
     #[cfg(target_os = "windows")]
     spawn_cmd.creation_flags(CREATE_NO_WINDOW);
 
-    let mut child = spawn_cmd
-        .spawn()
-        .map_err(|e| {
-            format!(
-                "Failed to spawn sidecar (node='{}'): {}. \
+    let mut child = spawn_cmd.spawn().map_err(|e| {
+        format!(
+            "Failed to spawn sidecar (node='{}'): {}. \
              Is Node.js installed? GUI apps cannot see version managers (fnm/nvm/volta) — \
              install Node.js system-wide or place it in /usr/local/bin.",
-                node_cmd, e
-            )
-        })?;
+            node_cmd, e
+        )
+    })?;
 
     // Read stdout lines until we find the port marker.
     //
@@ -325,7 +332,9 @@ fn setup_menu(app: &tauri::AppHandle) -> Result<(), Box<dyn std::error::Error>> 
         .id("file-export")
         .accelerator("CmdOrCtrl+S")
         .build(app)?;
-    let file_settings = MenuItemBuilder::new("Settings").id("file-settings").build(app)?;
+    let file_settings = MenuItemBuilder::new("Settings")
+        .id("file-settings")
+        .build(app)?;
 
     let file_submenu = SubmenuBuilder::new(app, "File")
         .item(&file_new_connection)
@@ -347,7 +356,9 @@ fn setup_menu(app: &tauri::AppHandle) -> Result<(), Box<dyn std::error::Error>> 
         .id("query-rename")
         .accelerator("F2")
         .build(app)?;
-    let query_help = MenuItemBuilder::new("Query Help").id("query-help").build(app)?;
+    let query_help = MenuItemBuilder::new("Query Help")
+        .id("query-help")
+        .build(app)?;
     let query_prev = MenuItemBuilder::new("Prev Query")
         .id("query-prev")
         .accelerator("CmdOrCtrl+{")
@@ -373,13 +384,18 @@ fn setup_menu(app: &tauri::AppHandle) -> Result<(), Box<dyn std::error::Error>> 
         .build()?;
 
     // Session submenu
-    let session_new = MenuItemBuilder::new("New Session").id("session-new").build(app)?;
-    let session_rename =
-        MenuItemBuilder::new("Rename Session").id("session-rename").build(app)?;
-    let session_switch =
-        MenuItemBuilder::new("Switch Session").id("session-switch").build(app)?;
-    let session_delete =
-        MenuItemBuilder::new("Delete Session").id("session-delete").build(app)?;
+    let session_new = MenuItemBuilder::new("New Session")
+        .id("session-new")
+        .build(app)?;
+    let session_rename = MenuItemBuilder::new("Rename Session")
+        .id("session-rename")
+        .build(app)?;
+    let session_switch = MenuItemBuilder::new("Switch Session")
+        .id("session-switch")
+        .build(app)?;
+    let session_delete = MenuItemBuilder::new("Delete Session")
+        .id("session-delete")
+        .build(app)?;
 
     let session_submenu = SubmenuBuilder::new(app, "Session")
         .item(&session_new)
@@ -420,7 +436,9 @@ fn setup_menu(app: &tauri::AppHandle) -> Result<(), Box<dyn std::error::Error>> 
         .build()?;
 
     // Help submenu
-    let help_bug = MenuItemBuilder::new("File a bug").id("help-file-bug").build(app)?;
+    let help_bug = MenuItemBuilder::new("File a bug")
+        .id("help-file-bug")
+        .build(app)?;
     let help_about = MenuItemBuilder::new("About sqlui-native (Check for update)")
         .id("help-about")
         .build(app)?;

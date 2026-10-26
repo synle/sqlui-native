@@ -7,7 +7,7 @@ Commands below reflect repository configuration, not a claim that they passed in
 ## Prerequisites
 
 - Use the development Node version in `.node-version` (currently 24) and npm.
-- Tauri development and packaging also require Rust and the platform's Tauri build prerequisites.
+- Tauri development, packaging, and Rust formatting require Rust; Tauri development and packaging also require the platform's Tauri build prerequisites.
 - Docker is needed for local database integration tests, not ordinary frontend development.
 - Desktop packages include Node; `scripts/download-node.js` controls the bundled version independently of `.node-version`.
 - Portal execution requires Node 22 or newer because backend code uses `node:sqlite`; the Vite `node18` output target does not lower that runtime requirement.
@@ -86,17 +86,17 @@ Follow the batching policy in `AGENTS.md`. Run the local pre-commit chain once a
 npm run lint && npm run typecheck && npm run test-ci && npm run format
 ```
 
-| Command                                   | Scope / caveat                                                                                |
-| ----------------------------------------- | --------------------------------------------------------------------------------------------- |
-| `npm run lint`                            | `oxlint --fix src`; mutates source, not ESLint                                                |
-| `npm run typecheck`                       | TypeScript without emit                                                                       |
-| `npm run test-ci`                         | One-shot unit suite; `pretest-ci` first builds frontend and server                            |
-| `npm test`                                | Build followed by Vitest watch mode; unsuitable for unattended one-shot checks                |
-| `npx vitest run src/path/to/file.spec.ts` | Focused unit test without npm's full pretest build hook                                       |
-| `npm run test-integration`                | Integration suite; local databases need Docker and cloud adapters need configured credentials |
-| `npm run format`                          | `oxfmt --write .`; can touch unrelated files                                                  |
-| `npm run format:check`                    | Read-only formatting check                                                                    |
-| `npm run validate`                        | CI-only: lint, typecheck, unit tests, format, E2E, smoke, integration                         |
+| Command                                   | Scope / caveat                                                                                         |
+| ----------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| `npm run lint`                            | `oxlint --fix src`; mutates source, not ESLint                                                         |
+| `npm run typecheck`                       | TypeScript without emit                                                                                |
+| `npm run test-ci`                         | One-shot unit suite; `pretest-ci` first builds frontend and server                                     |
+| `npm test`                                | Build followed by Vitest watch mode; unsuitable for unattended one-shot checks                         |
+| `npx vitest run src/path/to/file.spec.ts` | Focused unit test without npm's full pretest build hook                                                |
+| `npm run test-integration`                | Integration suite; local databases need Docker and cloud adapters need configured credentials          |
+| `npm run format`                          | Runs `oxfmt --write .` and `cargo fmt --manifest-path src-tauri/Cargo.toml`; can touch unrelated files |
+| `npm run format:check`                    | Checks Oxfmt and Rust formatting without writing                                                       |
+| `npm run validate`                        | CI-only: lint, typecheck, unit tests, format, E2E, smoke, integration                                  |
 
 For scoped formatting, invoke the installed formatter on the exact changed paths rather than reformatting unrelated work:
 
