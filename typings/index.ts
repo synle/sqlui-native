@@ -10,7 +10,7 @@ declare global {
 /**
  * Stores common typings used by both frontend and backend
  */
-export module SqluiCore {
+export namespace SqluiCore {
   /** Supported database dialect identifiers. */
   export type Dialect =
     | "mysql"
@@ -342,7 +342,7 @@ export module SqluiCore {
 /**
  * Stores most of the typings used strictly by the frontend
  */
-export module SqluiFrontend {
+export namespace SqluiFrontend {
   /** Partial query with optional frontend-specific execution state. */
   export type PartialConnectionQuery = SqluiCore.CoreConnectionQuery & {
     selected?: boolean;
@@ -419,7 +419,7 @@ export module SqluiFrontend {
 /**
  * Types for SQL/NoSQL script generation actions.
  */
-export module SqlAction {
+export namespace SqlAction {
   /** Input identifying a connection and its dialect. */
   export type ConnectionInput = {
     dialect?: string;
@@ -473,7 +473,7 @@ export module SqlAction {
 /**
  * This stores mostly keys used in our app
  */
-export module SqluiEnums {
+export namespace SqluiEnums {
   /**
    * in memory cache keys used in the server
    * @type {String}

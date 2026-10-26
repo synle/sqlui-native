@@ -1609,3 +1609,99 @@ xml:///absolute/path/to/file.xml
 ```js
 display(res_json);
 ```
+
+## json
+
+### Sample Connection String
+
+This is a sample connection string you can use.
+
+```
+json:///absolute/path/to/file.json
+```
+
+### Select JSON
+
+```js
+display(res_json);
+```
+
+## jsonc
+
+### Sample Connection String
+
+This is a sample connection string you can use.
+
+```
+jsonc:///absolute/path/to/file.jsonc
+```
+
+### Select JSON
+
+```js
+display(res_json);
+```
+
+## yaml
+
+### Sample Connection String
+
+This is a sample connection string you can use.
+
+```
+yaml:///absolute/path/to/file.yaml
+```
+
+### Select JSON
+
+```js
+display(res_json);
+```
+
+## yml
+
+### Sample Connection String
+
+This is a sample connection string you can use.
+
+```
+yml:///absolute/path/to/file.yml
+```
+
+### Select JSON
+
+```js
+display(res_json);
+```
+
+## toml
+
+### Sample Connection String
+
+This is a sample connection string you can use.
+
+```
+toml:///absolute/path/to/file.toml
+```
+
+### Select JSON
+
+```js
+display(res_json);
+```
+
+## xml
+
+### Sample Connection String
+
+This is a sample connection string you can use.
+
+```
+xml:///absolute/path/to/file.xml
+```
+
+### Select JSON
+
+```js
+display(res_json);
+```
