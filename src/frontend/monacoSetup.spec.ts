@@ -1,6 +1,15 @@
+// @vitest-environment jsdom
 import fs from "node:fs";
 import path from "node:path";
-import { describe, expect, test } from "vitest";
+import { describe, expect, test, vi } from "vitest";
+
+const workerMocks = vi.hoisted(() => ({
+  editor: class EditorWorker {},
+  json: class JsonWorker {},
+}));
+
+vi.mock("monaco-editor/editor/editor.worker.js?worker", () => ({ default: workerMocks.editor }));
+vi.mock("monaco-editor/languages/features/json/json.worker.js?worker", () => ({ default: workerMocks.json }));
 
 /**
  * `monacoSetup.ts` hand-composes the Monaco entry instead of importing `monaco-editor`, so that the
@@ -55,6 +64,23 @@ describe("monacoSetup language coverage", () => {
     expect(monacoSetupSource).toContain('from "monaco-editor/editor"');
     expect(monacoSetupSource).toContain('"monaco-editor/features/register.all"');
     expect(monacoSetupSource).not.toContain("monaco-editor/esm/vs/");
+  });
+
+  test("registers the application languages through the real Monaco entrypoint", async () => {
+    const { monaco } = await import("src/frontend/monacoSetup");
+    const languageIds = monaco.languages.getLanguages().map(({ id }) => id);
+
+    expect(languageIds).toContain("sql");
+    expect(languageIds).toContain("json");
+    expect((monaco.languages as any).json).toBeDefined();
+  });
+
+  test("selects the JSON worker only for JSON models", async () => {
+    await import("src/frontend/monacoSetup");
+    const getWorker = (window as any).MonacoEnvironment.getWorker;
+
+    expect(getWorker("worker-id", "json")).toBeInstanceOf(workerMocks.json);
+    expect(getWorker("worker-id", "editor")).toBeInstanceOf(workerMocks.editor);
   });
 
   test("imports a grammar for every adapter syntax mode", () => {
