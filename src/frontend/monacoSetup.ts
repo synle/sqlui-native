@@ -3,27 +3,27 @@
  *
  * Only the JSON language service (validation, folding, formatting of result/settings JSON)
  * is loaded. JavaScript/TypeScript and HTML use the Monarch grammars from
- * `basic-languages/*` for highlighting; their language services were dropped because
+ * `languages/definitions/*` for highlighting; their language services were dropped because
  * they ship a 7.0 MB `ts.worker` and a 695 kB `html.worker` for features the app does not
  * use (`noLib` JS intellisense, HTML completion in read-only response viewers).
  */
-import * as monaco from "monaco-editor/esm/vs/editor/editor.api";
-import "monaco-editor/esm/vs/editor/edcore.main";
-import * as jsonLanguage from "monaco-editor/esm/vs/language/json/monaco.contribution";
-import "monaco-editor/esm/vs/basic-languages/sql/sql.contribution";
-import "monaco-editor/esm/vs/basic-languages/javascript/javascript.contribution";
-import "monaco-editor/esm/vs/basic-languages/graphql/graphql.contribution";
-import "monaco-editor/esm/vs/basic-languages/shell/shell.contribution";
-import "monaco-editor/esm/vs/basic-languages/html/html.contribution";
-import "monaco-editor/esm/vs/basic-languages/css/css.contribution";
-import "monaco-editor/esm/vs/basic-languages/python/python.contribution";
-import "monaco-editor/esm/vs/basic-languages/java/java.contribution";
-import "monaco-editor/esm/vs/basic-languages/typescript/typescript.contribution";
+import * as monaco from "monaco-editor/editor";
+import "monaco-editor/features/register.all";
+import * as jsonLanguage from "monaco-editor/languages/features/json/register";
+import "monaco-editor/languages/definitions/sql/register";
+import "monaco-editor/languages/definitions/javascript/register";
+import "monaco-editor/languages/definitions/graphql/register";
+import "monaco-editor/languages/definitions/shell/register";
+import "monaco-editor/languages/definitions/html/register";
+import "monaco-editor/languages/definitions/css/register";
+import "monaco-editor/languages/definitions/python/register";
+import "monaco-editor/languages/definitions/java/register";
+import "monaco-editor/languages/definitions/typescript/register";
 
-import editorWorker from "monaco-editor/esm/vs/editor/editor.worker?worker";
-import jsonWorker from "monaco-editor/esm/vs/language/json/json.worker?worker";
+import editorWorker from "monaco-editor/editor/editor.worker.js?worker";
+import jsonWorker from "monaco-editor/languages/features/json/json.worker.js?worker";
 
-// edcore.main skips the language namespace assignments that editor.main does.
+// Keep the JSON language module available through Monaco's language namespace.
 (monaco.languages as any).json = jsonLanguage;
 
 self.MonacoEnvironment = {

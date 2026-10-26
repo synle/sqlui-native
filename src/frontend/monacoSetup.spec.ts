@@ -18,7 +18,7 @@ const monacoSetupSource = fs.readFileSync(path.join(ROOT, "src/frontend/monacoSe
 /** Language ids `monacoSetup.ts` imports a Monarch grammar for. */
 function importedBasicLanguages(): Set<string> {
   const ids = new Set<string>();
-  const pattern = /basic-languages\/([^/]+)\/[^/]+\.contribution/g;
+  const pattern = /languages\/definitions\/([^/]+)\/register/g;
   for (const match of monacoSetupSource.matchAll(pattern)) {
     ids.add(match[1]);
   }
@@ -51,6 +51,12 @@ function adapterSyntaxModes(): string[] {
 }
 
 describe("monacoSetup language coverage", () => {
+  test("uses Monaco's supported public ESM entrypoints", () => {
+    expect(monacoSetupSource).toContain('from "monaco-editor/editor"');
+    expect(monacoSetupSource).toContain('"monaco-editor/features/register.all"');
+    expect(monacoSetupSource).not.toContain("monaco-editor/esm/vs/");
+  });
+
   test("imports a grammar for every adapter syntax mode", () => {
     const imported = importedBasicLanguages();
     const modes = adapterSyntaxModes();
@@ -87,14 +93,14 @@ describe("monacoSetup language coverage", () => {
   });
 
   test("does not import the css language service, which would re-add the css.worker chunk", () => {
-    expect(monacoSetupSource).not.toContain("language/css/monaco.contribution");
+    expect(monacoSetupSource).not.toContain("languages/features/css/register");
   });
 
-  test("re-assigns the json language namespace that edcore.main skips", () => {
+  test("keeps the JSON language module available through Monaco's language namespace", () => {
     expect(monacoSetupSource).toMatch(/languages as any\)\.json\s*=/);
   });
 
-  test.each(["language/typescript/", "language/html/", "ts.worker?worker", "html.worker?worker"])(
+  test.each(["languages/features/typescript/", "languages/features/html/", "ts.worker?worker", "html.worker?worker"])(
     "does not import %s, which would re-add a multi-hundred-kB worker chunk",
     (fragment) => {
       expect(monacoSetupSource).not.toContain(fragment);
