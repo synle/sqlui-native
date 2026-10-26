@@ -22,7 +22,7 @@ export default defineConfig({
   projects: [
     {
       name: "chromium",
-      use: { ...devices["Desktop Chrome"] },
+      use: { ...devices["Desktop Chrome"], screen: undefined },
     },
   ],
   /* Only run Phase 0 (GitHub Pages links), Phase 1 (App Launch), and Phase 2 (Connection CRUD) for smoke. */
