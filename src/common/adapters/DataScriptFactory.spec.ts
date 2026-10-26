@@ -163,6 +163,20 @@ Query Guides:
     addGuideText("sfdc", connectionString, scripts);
   });
 
+  const fileDialects: SqluiCore.Dialect[] = ["json", "jsonc", "yaml", "yml", "toml", "xml"];
+  for (const dialect of fileDialects) {
+    test(`local file adapter - ${dialect}`, () => {
+      const { connectionString, scripts } = _getScript(dialect);
+      const fileScripts = scripts || [];
+
+      expect(connectionString).toContain(`${dialect}:///absolute/path/to/file.`);
+      expect(fileScripts).toHaveLength(1);
+      expect(fileScripts[0]).toMatchObject({ label: "Select JSON", formatter: "js" });
+      expect(fileScripts[0].query).toContain("display(res_json)");
+      addGuideText(dialect, connectionString, fileScripts);
+    });
+  }
+
   // Connection actions tests
   const connectionDialects: SqluiCore.Dialect[] = [
     "mysql",
@@ -176,6 +190,7 @@ Query Guides:
     "cosmosdb",
     "aztable",
     "sfdc",
+    ...fileDialects,
   ];
 
   for (const dialect of connectionDialects) {

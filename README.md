@@ -95,7 +95,7 @@ On boot, the portal:
 
 ### Dialect support
 
-Portal mode supports every dialect the desktop app does — SQLite, PostgreSQL, MySQL, MariaDB, Microsoft SQL Server, Cassandra, MongoDB, Redis, Azure CosmosDB, Azure Table Storage, Salesforce (SFDC), REST, and GraphQL. Pass connection strings in their native format (`postgres://…`, `mongodb://…`, `aztable://DefaultEndpointsProtocol=…`, etc.).
+Portal mode supports the same database and API dialects as the desktop app — SQLite, PostgreSQL, MySQL, MariaDB, Microsoft SQL Server, Cassandra, MongoDB, Redis, Azure CosmosDB, Azure Table Storage, Salesforce (SFDC), REST, and GraphQL. Pass connection strings in their native format (`postgres://…`, `mongodb://…`, `aztable://DefaultEndpointsProtocol=…`, etc.). Local document files (JSON, JSONC, YAML, TOML, and XML) are available only when the portal binds to loopback; the default `0.0.0.0` bind disables file reads. Use `--host 127.0.0.1` to enable them.
 
 A bare path like `./mydata.sqlite` is auto-resolved to `sqlite:///<absolute-path>`.
 
@@ -149,6 +149,30 @@ Refer to the [query guides](https://synle.github.io/sqlui-native/guides) for dia
 - [Salesforce (SFDC)](https://synle.github.io/sqlui-native/guides#sfdc) (limited support)
 - GraphQL
 - REST API (curl / fetch) — Postman-like API client with `{{variable}}` interpolation
+- Local document files — JSON, JSONC, YAML, TOML, and XML (read-only)
+
+### Local Document Files
+
+Connect to an absolute file path with a format-specific URI:
+
+```text
+json:///Users/you/project/package.json
+jsonc:///Users/you/project/app.jsonc
+yml:///Users/you/project/build.yaml
+toml:///Users/you/project/config.toml
+xml:///Users/you/project/data.xml
+```
+
+Right-click the file table and choose **Select JSON** to insert `display(res_json);`. Filter a collection with the supported query syntax:
+
+```js
+res_json = res_json.items.filter(item.age >= 18);
+display(res_json);
+```
+
+Arrow callbacks also work: `res_json.items.filter(item => item.age >= 18)`. Queries support `res_json` assignment, `display(...)`, property and index access, comparisons, boolean and arithmetic operators, and the array methods `filter`, `find`, `map`, `slice`, and `includes`. The query parser evaluates this restricted subset; it does not execute arbitrary JavaScript. Documents are read-only and limited to 10 MiB. Results show formatted JSON in the **Result** tab and the exact source text in the **Original File** tab.
+
+The desktop app and loopback server support local files. A network-bound portal disables file reads; bind it with `--host 127.0.0.1` to enable them.
 
 ## Features
 

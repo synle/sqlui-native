@@ -16,6 +16,8 @@ import GraphQLDataAdapter from "src/common/adapters/GraphQLDataAdapter/index";
 import GraphQLDataAdapterScripts from "src/common/adapters/GraphQLDataAdapter/scripts";
 import RestApiDataAdapter from "src/common/adapters/RestApiDataAdapter/index";
 import RestApiDataAdapterScripts from "src/common/adapters/RestApiDataAdapter/scripts";
+import FileDataAdapter from "src/common/adapters/FileDataAdapter/index";
+import FileDataAdapterScripts from "src/common/adapters/FileDataAdapter/scripts";
 import SalesforceDataAdapter from "src/common/adapters/SalesforceDataAdapter/index";
 import SalesforceDataAdapterScripts from "src/common/adapters/SalesforceDataAdapter/scripts";
 import {
@@ -356,9 +358,10 @@ export function getDataAdapter(connection: string) {
   // TODO: here we should initialize the connection based on type
   // of the connection string
   let adapter: IDataAdapter | undefined;
+  let targetDialect: SqluiCore.Dialect | undefined;
 
   try {
-    const targetDialect = getDialectType(connection);
+    targetDialect = getDialectType(connection);
 
     if (RelationalDataAdapterScripts.isDialectSupported(targetDialect)) {
       adapter = createRelationalDataAdapter(connection);
@@ -378,9 +381,11 @@ export function getDataAdapter(connection: string) {
       adapter = new GraphQLDataAdapter(connection);
     } else if (RestApiDataAdapterScripts.isDialectSupported(targetDialect)) {
       adapter = new RestApiDataAdapter(connection);
+    } else if (FileDataAdapterScripts.isDialectSupported(targetDialect)) {
+      adapter = new FileDataAdapter(connection);
     }
   } catch (err) {
-    console.error("DataAdapterFactory.ts:getDataAdapter", connection, err);
+    console.error("DataAdapterFactory.ts:getDataAdapter", targetDialect || "unknown", err);
     writeDebugLog(`DataAdapterFactory.ts:getDataAdapter - failed to create adapter - ${(err as any)?.message || err}`);
     throw err;
   }

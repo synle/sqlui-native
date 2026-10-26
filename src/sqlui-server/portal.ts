@@ -20,6 +20,7 @@ import type { Server } from "node:http";
 import os from "node:os";
 import path from "node:path";
 import { serve } from "@hono/node-server";
+import { configureLocalFileAccess } from "src/common/adapters/FileDataAdapter/localAccess";
 import { getDialectTypeFromConnectionString } from "src/common/adapters/DataScriptFactory";
 
 // ---------------------------------------------------------------------------
@@ -455,6 +456,8 @@ function gracefulShutdown(server: Server, signal: string): void {
     console.log(getAppVersion() || "unknown");
     process.exit(0);
   }
+
+  configureLocalFileAccess(opts.host);
 
   // Storage-dir resolution priority (highest first):
   //   1. --home-dir / --config-path  (explicit override)

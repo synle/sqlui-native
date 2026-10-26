@@ -348,6 +348,16 @@ The template files use placeholder names that you need to replace with your actu
 | `AdapterClient` (type alias)     | Client type from your database driver                   | `Client` (from `my-db-driver`) |
 | `your_dialect_name` (string)     | Lowercase dialect identifier used in connection strings | `mydb`                         |
 
+### Local structured-text file adapter
+
+`src/common/adapters/FileDataAdapter/` provides read-only connections to local JSON, JSONC, YAML, TOML, and XML files. Add schemes to `FILE_DATA_DIALECTS`, parser dispatch, adapter routing, and `SqluiCore.Dialect` together. Parser behavior belongs in `parsers.spec.ts`; query grammar belongs in `queryParser.spec.ts`; adapter and routing behavior belongs in their co-located specs. `DataScriptFactory.spec.ts` regenerates `guides.md`.
+
+Connections use an absolute path after the format scheme, such as `json:///absolute/path/package.json` or `yml:///absolute/path/build.yaml`. The backend parser dependencies are `jsonc-parser`, `yaml`, `@iarna/toml`, and `fast-xml-parser`. Keep these imports in backend-only adapter modules; browser-reachable modules must remain free of Node APIs and parser I/O.
+
+File queries use a restricted JavaScript-like grammar, not arbitrary JavaScript execution. `res_json` refers to the parsed document, assignments replace that value, and `display(res_json)` returns the result. The table-level **Select JSON** action supplies `display(res_json);`. Supported expressions include safe property/index access, comparisons, boolean/arithmetic operators, and `filter`, `find`, `map`, `slice`, and `includes` calls. The original file text is returned separately from formatted JSON output.
+
+Reads are limited to 10 MiB and remain read-only. Desktop and standalone servers bind to loopback. The portal enables local-file reads only for loopback binds; network-bound portal mode must fail closed. Preserve `configureLocalFileAccess()` checks in `src/common/adapters/FileDataAdapter/localAccess.ts`, `src/sqlui-server/index.ts`, and `src/sqlui-server/portal.ts`.
+
 ### Step-by-step guide
 
 Below we use `MyDb` as an example adapter name and `mydb` as the dialect name. Replace these with your actual values.

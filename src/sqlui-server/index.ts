@@ -6,8 +6,11 @@ import net from "node:net";
 import os from "node:os";
 import path from "node:path";
 import { serve } from "@hono/node-server";
+import { configureLocalFileAccess } from "src/common/adapters/FileDataAdapter/localAccess";
 import { app, initializeEndpoints, mountStaticAssets, port as defaultPort } from "src/sqlui-server/server";
 
+const HOST = "127.0.0.1";
+configureLocalFileAccess(HOST);
 initializeEndpoints();
 
 // ---------------------------------------------------------------------------
@@ -63,9 +66,6 @@ const embeddedAssetsDir = extractEmbeddedAssetsIfPresent();
 if (embeddedAssetsDir) {
   mountStaticAssets(embeddedAssetsDir);
 }
-
-/** Host to bind to — loopback only, no firewall prompt. */
-const HOST = "127.0.0.1";
 
 /**
  * Checks if a port is already in use on the given host.

@@ -27,7 +27,13 @@ export module SqluiCore {
     | "aztable"
     | "sfdc"
     | "rest"
-    | "graphql";
+    | "graphql"
+    | "json"
+    | "jsonc"
+    | "yaml"
+    | "yml"
+    | "toml"
+    | "xml";
 
   /** Supported programming language modes for code generation. */
   export type LanguageMode = "javascript" | "python" | "java";

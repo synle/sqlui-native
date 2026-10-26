@@ -112,6 +112,17 @@ describe("ResultBox", () => {
     expect(container.textContent).toContain("RestApiResultBox");
   });
 
+  test("file results show formatted JSON and separate source tab", () => {
+    const query = {
+      ...baseQuery,
+      result: { raw: [{ active: true }], meta: { isFileData: true, rawSource: '{"active":true}', sourceFormat: "json" } },
+    } as any;
+    const { container, getByTestId } = render(<ResultBox query={query} executing={false} />);
+
+    expect(container.textContent).toContain("headers:2");
+    expect(getByTestId("code-editor").textContent).toBe('{\n  "active": true\n}');
+  });
+
   test("non-array data renders JsonFormatData (INSERT/UPDATE)", () => {
     const query = {
       ...baseQuery,

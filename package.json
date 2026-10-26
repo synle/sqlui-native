@@ -1,6 +1,6 @@
 {
   "name": "sqlui-native",
-  "version": "6.1.0",
+  "version": "6.2.0",
   "private": true,
   "description": "A minimal native desktop client for most databases supporting MySQL, MariaDB, MS SQL Server, PostgreSQL, SQLite, Cassandra, MongoDB and Redis.",
   "keywords": [
@@ -69,6 +69,7 @@
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
     "@hono/node-server": "^2.0.2",
+    "@iarna/toml": "2.2.5",
     "@mui/icons-material": "^9.0.0",
     "@mui/lab": "^9.0.0-beta.2",
     "@mui/material": "^9.0.0",
@@ -85,12 +86,14 @@
     "cassandra-driver": "^3.6.0",
     "connection-string-parser": "^1.0.4",
     "dompurify": "3.4.13",
+    "fast-xml-parser": "5.11.2",
     "fuzzysort": "^3.1.0",
     "hono": "^4.12.18",
     "html-to-image": "^1.11.13",
     "js-beautify": "^1.15.4",
     "jsforce": "^3.10.14",
     "json-2-csv": "^5.5.10",
+    "jsonc-parser": "3.3.1",
     "monaco-editor": "^0.55.1",
     "mongodb": "^4.10.0",
     "mustache": "^4.2.0",
@@ -102,7 +105,8 @@
     "react-router": "^7.14.2",
     "redis": "^4.3.1",
     "sql-formatter": "^15.7.3",
-    "tedious": "^19.0.0"
+    "tedious": "^19.0.0",
+    "yaml": "2.9.1"
   },
   "devDependencies": {
     "@playwright/test": "^1.58.2",

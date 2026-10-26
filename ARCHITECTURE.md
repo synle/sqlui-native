@@ -74,6 +74,7 @@ All storage selection must finish before the first storage operation. Import ord
 | `src/frontend/platform/`                                            | Tauri/browser platform integration; Electron compatibility code remains, but current packaging uses Tauri |
 | `src/common/Endpoints.ts`                                           | Shared API registration and application operations                                                        |
 | `src/common/adapters/DataAdapterFactory.ts`                         | Dialect routing, metadata/cache orchestration, adapter lifecycle                                          |
+| `src/common/adapters/FileDataAdapter/`                              | Node-only, read-only local JSON/JSONC/YAML/TOML/XML parsing and query evaluation                          |
 | `src/common/adapters/DataScriptFactory.ts` and adapter `scripts.ts` | Browser-safe query templates, dialect metadata, icons, setup guides                                       |
 | `src/common/PersistentStorage*.ts`                                  | Storage facade, implementations, and migration support                                                    |
 | `src/common/utils/`                                                 | Shared helpers, error classification, concurrency limiting, in-flight execution registry                  |
@@ -158,10 +159,12 @@ The portal build also emits a launcher, package metadata, and a versioned tarbal
 
 **The current API is not an authenticated service.** `server.ts` permits wildcard CORS, and the portal exposes the shared application on the LAN by default.
 
+The local document adapter reads host files and enables access only for loopback-bound runtimes. The portal disables it on non-loopback binds, including its default `0.0.0.0` host; use `--host 127.0.0.1` for local file connections. Filesystem errors retain safe error codes but redact absolute paths from responses and logs. This gate does not add authentication or make other portal data safe to expose.
+
 `/api/file/save` accepts a caller-supplied absolute path and writes content. Current checks do not restrict writes to paths approved by a native save dialog.
 
 Saved connection strings can contain plaintext credentials. Neither a session header nor a loopback binding should be described as a credential-protection mechanism.
 
 Use disposable profiles and loopback portal binding for local testing. Do not expose real saved credentials or treat the portal as a multi-user authorization boundary.
 
-Per-launch API tokens, stricter CORS, file-path authorization, keychain storage, pooled adapter caching, and streaming row limits remain enhancement proposals, not documented guarantees.
+Per-launch API tokens, stricter CORS, per-path file authorization, keychain storage, pooled adapter caching, and streaming row limits remain enhancement proposals, not documented guarantees.

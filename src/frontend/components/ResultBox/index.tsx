@@ -9,6 +9,7 @@ import { DataTableWithJSONList } from "src/frontend/components/DataTable";
 import JsonFormatData from "src/frontend/components/JsonFormatData";
 import { useCommands } from "src/frontend/components/MissionControl";
 import GraphQLResultBox from "src/frontend/components/ResultBox/GraphQLResultBox";
+import FileDataResultBox from "src/frontend/components/ResultBox/FileDataResultBox";
 import RestApiResultBox from "src/frontend/components/ResultBox/RestApiResultBox";
 import Tabs from "src/frontend/components/Tabs";
 import Timer from "src/frontend/components/Timer";
@@ -73,6 +74,13 @@ export default function ResultBox(props: ResultBoxProps): React.JSX.Element | nu
 
   if (!queryResult) {
     return null;
+  }
+
+  // File-backed document results show the transformed value and exact source text.
+  if (queryResult.meta?.isFileData) {
+    return (
+      <FileDataResultBox meta={queryResult.meta} raw={data || []} executionStart={query.executionStart} executionEnd={query.executionEnd} />
+    );
   }
 
   // GraphQL responses get a dedicated result viewer

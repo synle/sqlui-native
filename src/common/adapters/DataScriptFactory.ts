@@ -7,6 +7,7 @@ import RedisDataAdapterScripts from "src/common/adapters/RedisDataAdapter/script
 import RelationalDataAdapterScripts from "src/common/adapters/RelationalDataAdapter/scripts";
 import GraphQLDataAdapterScripts from "src/common/adapters/GraphQLDataAdapter/scripts";
 import RestApiDataAdapterScripts from "src/common/adapters/RestApiDataAdapter/scripts";
+import FileDataAdapterScripts from "src/common/adapters/FileDataAdapter/scripts";
 import SalesforceDataAdapterScripts from "src/common/adapters/SalesforceDataAdapter/scripts";
 import { formatJS, formatSQL } from "src/frontend/utils/formatter";
 import { SqlAction, SqluiCore } from "typings";
@@ -87,6 +88,7 @@ export function getAllImplementations(): BaseDataScript[] {
     SalesforceDataAdapterScripts,
     GraphQLDataAdapterScripts,
     RestApiDataAdapterScripts,
+    FileDataAdapterScripts,
   ];
 }
 
