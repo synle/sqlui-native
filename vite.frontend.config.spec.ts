@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { getFrontendManualChunk, getNodeModulesPackageName, resolveBuildTarget } from "./vite.frontend.config";
+import { getFrontendManualChunk, getNodeModulesPackageName, resolveBuildTarget } from "./vite.frontend.helpers";
 
 const NODE_MODULES = "/repo/node_modules";
 

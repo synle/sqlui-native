@@ -51,7 +51,7 @@
       "type": "node",
       "request": "launch",
       "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/vitest",
-      "args": ["run", "--config", "vitest.integration.config.ts"],
+      "args": ["run", "--config", "vitest.integration.config.mts"],
       "cwd": "${workspaceFolder}",
       "console": "integratedTerminal",
       "skipFiles": ["<node_internals>/**", "**/node_modules/**"]

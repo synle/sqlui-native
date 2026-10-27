@@ -15,11 +15,11 @@ initializeEndpoints();
 
 // ---------------------------------------------------------------------------
 // Optional static-asset serving — when a sibling `sqlui-server-assets.json` is
-// present (emitted by vite.sqlui-server.sidecar.config.ts), the server can serve
+// present (emitted by vite.sqlui-server.sidecar.config.mts), the server can serve
 // the React UI in addition to /api routes. This is the same code path the
 // portal entry uses, just sharing one server binary.
 //
-// In dev (vite.sqlui-server.config.ts has no embed plugin), the JSON sibling
+// In dev (vite.sqlui-server.config.mts has no embed plugin), the JSON sibling
 // won't exist and this is a no-op — Tauri continues using `frontendDist` and
 // the dev Vite server hosts the UI separately.
 // ---------------------------------------------------------------------------

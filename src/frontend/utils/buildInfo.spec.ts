@@ -140,7 +140,7 @@ describe("buildInfo", () => {
     });
 
     test("uses the build-time globals when no target override is given", () => {
-      // vitest.config.ts stubs the target globals as empty, so the host wins here.
+      // vitest.config.mts stubs the target globals as empty, so the host wins here.
       expect(resolvePlatformLabels({ platform: "linux", arch: "x64" })).toEqual({
         osLabel: "Linux",
         archLabel: "x64 (Intel/AMD) \u00b7 64-bit",

@@ -17,7 +17,7 @@ cpSync("build/sqlui-server.js", path.join(RESOURCES_DIR, "sqlui-server.js"));
 
 // 1a. Copy the sibling embedded-assets JSON so the sidecar can serve the UI
 //     in standalone mode (and, in future, in Tauri mode if we drop frontendDist).
-//     Emitted by vite.sqlui-server.sidecar.config.ts via emitEmbeddedAssetsPlugin.
+//     Emitted by vite.sqlui-server.sidecar.config.mts via emitEmbeddedAssetsPlugin.
 const assetsJsonSrc = path.join("build", "sqlui-server-assets.json");
 if (fs.existsSync(assetsJsonSrc)) {
   cpSync(assetsJsonSrc, path.join(RESOURCES_DIR, "sqlui-server-assets.json"));

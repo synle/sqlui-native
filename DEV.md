@@ -109,7 +109,7 @@ Do not run `test-e2e`, `test-smoke`, or `validate` locally. Automated browser E2
 For one integration file:
 
 ```bash
-npx vitest run --config vitest.integration.config.ts src/common/adapters/RelationalDataAdapter/mysql.integration.spec.ts
+npx vitest run --config vitest.integration.config.mts src/common/adapters/RelationalDataAdapter/mysql.integration.spec.ts
 ```
 
 Never print `TEST_*_CONNECTION` values. Missing cloud credentials mean skipped coverage, not a passing cloud-adapter check.
@@ -118,7 +118,7 @@ Never print `TEST_*_CONNECTION` values. Missing cloud credentials mean skipped c
 
 Keep numeric floors in their authoritative configuration, not duplicated here:
 
-- JS/TS enforcement: `vitest.config.ts` → `test.coverage.thresholds`, enabled by coverage runs.
+- JS/TS enforcement: `vitest.config.mts` → `test.coverage.thresholds`, enabled by coverage runs.
 - JS/TS workflow `MIN_*` values: `.github/workflows/build-main.yml` and `.github/workflows/integration-test.yml`.
 - Rust enforcement: `rust_unit_tests` in `.github/workflows/integration-test.yml`, using `cargo-llvm-cov` and its `MIN_*` variables.
 - Rust summary output: `src-tauri/rust-coverage.json`; CI uploads it as `rust-coverage`.
@@ -186,7 +186,7 @@ This ledger records dependency versions evaluated for this repository. “Upstre
 | `typescript`                                  | `5.9.3` → `7.0.2`                   | Compiler major affects project-wide diagnostics; defer broad migration.                  |
 | `vitest`, `@vitest/coverage-v8`               | `4.1.12`/`4.1.12` → `5.0.5`/`5.0.5` | Runner and provider must upgrade together; defer test-harness migration.                 |
 
-`@types/redis` latest tag is `4.0.10`, older than installed `4.0.11`; no downgrade was made.
+The deprecated `@types/redis` stub was removed because `redis` provides its own type declarations.
 
 `npm audit` reports 4 findings: 2 high under `@azure/msal-node` ([GHSA-xcx6-jx8p-x3h5](https://github.com/advisories/GHSA-xcx6-jx8p-x3h5)) via Tedious and 2 moderate under `uuid` ([GHSA-w5hq-g745-h8pq](https://github.com/advisories/GHSA-w5hq-g745-h8pq)) via Cosmos 3.
 
@@ -196,7 +196,6 @@ A clean `npm ci --ignore-scripts` in a temporary directory passed, and `npm ls -
 
 - `node-domexception@1.0.0` via `node-fetch@3.3.2`.
 - `whatwg-encoding@3.1.1` via `jsdom@24.1.3`.
-- `@types/redis@4.0.11` is a stub.
 - `uuid@8.3.2` via `@azure/cosmos@3.17.3`.
 
 ### Tauri and Rust

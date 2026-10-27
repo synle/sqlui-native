@@ -63,12 +63,12 @@ describe("Tauri packaging safeguards", () => {
     });
   });
 
-  describe("vite.sqlui-server.sidecar.config.ts", () => {
-    const sidecarConfig = readFile("vite.sqlui-server.sidecar.config.ts");
+  describe("vite.sqlui-server.sidecar.config.mts", () => {
+    const sidecarConfig = readFile("vite.sqlui-server.sidecar.config.mts");
 
     test("should output a single bundled sqlui-server.js", () => {
       expect(sidecarConfig).toContain("sqlui-server.js");
-      expect(sidecarConfig).toContain("inlineDynamicImports");
+      expect(sidecarConfig).toContain("codeSplitting: false");
     });
 
     test("should use CJS format for Node.js sidecar", () => {

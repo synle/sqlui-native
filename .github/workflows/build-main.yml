@@ -23,7 +23,7 @@ env:
 
 jobs:
   code_format:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     permissions:
       contents: write
       statuses: write
@@ -89,7 +89,7 @@ jobs:
 
   tests:
     needs: [code_format]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     permissions:
       checks: write
       contents: read
@@ -109,10 +109,9 @@ jobs:
       - name: Run prebuild
         run: npm run prebuild
 
-      # `--coverage.enabled` activates the thresholds block in vitest.config.ts,
-      # which fails the run if any metric (statements/branches/functions/lines)
-      # drops below the baseline. This is the enforcement gate for the main /
-      # PR build flow; the integration-test.yml workflow does the same via a
+      # `--coverage.enabled` activates thresholds in vitest.config.mts. Vitest
+      # fails if any metric drops below baseline. This gate applies to main and
+      # PR builds; integration-test.yml does the same via a
       # secondary bash check that also posts a step-summary table.
       - name: Run unit tests with coverage
         run: npx vitest run --reporter=default --reporter=junit --outputFile.junit=unit-test-results.xml --coverage.enabled
@@ -129,7 +128,7 @@ jobs:
 
       # Mirrors the coverage summary from integration-test.yml so build-main /
       # pr-main runs surface the same Metric|Definition|Baseline|Actual|Status
-      # table in their job summary. Vitest's thresholds (in vitest.config.ts)
+      # table in their job summary. Vitest's thresholds (in vitest.config.mts)
       # are the actual enforcement gate — if any metric is below baseline,
       # the previous "Run unit tests with coverage" step has already failed.
       - name: Report JS/TS coverage
@@ -169,7 +168,8 @@ jobs:
           row "Functions"  "% of declared functions invoked at least once"     "$FUNCS"  "$MIN_FUNCTIONS"
           row "Lines"      "% of source lines executed at least once"          "$LINES"  "$MIN_LINES"
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "Enforcement: thresholds in \`vitest.config.ts\` — vitest fails the run on regression." >> $GITHUB_STEP_SUMMARY
+          echo "Enforcement: thresholds in \`vitest.config.mts\` —" \
+            "vitest fails the run on regression." >> $GITHUB_STEP_SUMMARY
 
       - name: Run typecheck
         run: npm run typecheck

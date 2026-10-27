@@ -10,9 +10,10 @@
 
 import fs from "node:fs";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { defineConfig, type Plugin } from "vite";
-import { emitEmbeddedAssetsPlugin } from "./scripts/vite-plugin-embed-frontend";
-import appPackage from "./package.json";
+import { emitEmbeddedAssetsPlugin } from "./scripts/vite-plugin-embed-frontend.mts";
+import appPackage from "./package.json" with { type: "json" };
 
 /**
  * Empty externals list — everything (Hono + subpaths like `hono/cors`, database drivers, etc.)
@@ -20,8 +21,9 @@ import appPackage from "./package.json";
  */
 const externalsDeps: string[] = [];
 
-const buildDir = path.resolve(__dirname, "build");
-const outDir = path.resolve(__dirname, "dist", "portal");
+const rootDir = path.dirname(fileURLToPath(import.meta.url));
+const buildDir = path.resolve(rootDir, "build");
+const outDir = path.resolve(rootDir, "dist", "portal");
 
 /**
  * Prepends a `#!/usr/bin/env node` shebang to the emitted entry chunk and chmods
@@ -71,6 +73,7 @@ function writePortalPackageJson(): Plugin {
 }
 
 export default defineConfig({
+  envDir: false,
   // The portal SSR bundle has no use for public/ — that directory only
   // exists for the frontend (favicon, manifest, etc., which are already
   // embedded via the frontend build).
@@ -93,13 +96,13 @@ export default defineConfig({
     outDir,
     emptyOutDir: true,
     sourcemap: false,
-    rollupOptions: {
+    rolldownOptions: {
       input: "./src/sqlui-server/portal.ts",
       external: externalsDeps,
       output: {
         entryFileNames: "sqlui-portal.js",
         format: "cjs",
-        inlineDynamicImports: true,
+        codeSplitting: false,
       },
     },
     target: "node18",
@@ -112,9 +115,9 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      src: path.resolve(__dirname, "src"),
-      electron: path.resolve(__dirname, "electron"),
-      typings: path.resolve(__dirname, "typings"),
+      src: path.resolve(rootDir, "src"),
+      electron: path.resolve(rootDir, "electron"),
+      typings: path.resolve(rootDir, "typings"),
     },
   },
 } as any);

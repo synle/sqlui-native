@@ -140,13 +140,13 @@ SQL completion filtering lives in `src/frontend/utils/sqlCompletionContext.ts`:
 
 `monacoSetup.ts` includes editor and JSON workers plus basic-language grammars. TypeScript and HTML language services are intentionally absent; syntax highlighting remains.
 
-`vite.frontend.config.ts` groups vendors and keeps React-core packages together. Its HTML plugin strips `crossorigin` attributes for Tauri protocol compatibility.
+`vite.frontend.config.mts` groups vendors and keeps React-core packages together. Its HTML plugin strips `crossorigin` attributes for Tauri protocol compatibility.
 
 ## Distribution and Embedded Assets
 
-`vite.sqlui-server.config.ts` produces the standalone server bundle. `vite.sqlui-server.sidecar.config.ts` bundles JavaScript dependencies for desktop resources.
+`vite.sqlui-server.config.mts` produces the standalone server bundle. `vite.sqlui-server.sidecar.config.mts` bundles JavaScript dependencies for desktop resources.
 
-`emitEmbeddedAssetsPlugin` in `scripts/vite-plugin-embed-frontend.ts` writes the built frontend as a base64 map into a sibling JSON file:
+`emitEmbeddedAssetsPlugin` in `scripts/vite-plugin-embed-frontend.mts` writes the built frontend as a base64 map into a sibling JSON file:
 
 - Sidecar: `sqlui-server.js` plus `sqlui-server-assets.json`.
 - Portal: `sqlui-portal.js` plus `sqlui-portal-assets.json`.

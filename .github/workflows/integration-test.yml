@@ -499,7 +499,10 @@ jobs:
           TEST_AZ_TABLE_STORAGE_CONNECTION: ${{ inputs.run_integration && secrets.TEST_AZ_TABLE_STORAGE_CONNECTION || '' }}
           TEST_AZ_COSMOSDB_CONNECTION: ${{ inputs.run_integration && secrets.TEST_AZ_COSMOSDB_CONNECTION || '' }}
           TEST_SFDC_CONNECTION: ${{ inputs.run_integration && secrets.TEST_SFDC_CONNECTION || '' }}
-        run: npx vitest run --config vitest.integration.config.ts --reporter=default --reporter=junit --outputFile.junit=integration-test-results.xml
+        run: >-
+          npx vitest run --config vitest.integration.config.mts
+          --reporter=default --reporter=junit
+          --outputFile.junit=integration-test-results.xml
 
       - name: Record integration tests end time
         if: ${{ always() }}

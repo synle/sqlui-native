@@ -4,8 +4,8 @@
  * curl|tar and npx flows.
  *
  *   1. Cleans build/ (frontend output dir) so stale assets don't bloat the bundle
- *   2. Frontend bundle  (vite.frontend.config.ts → build/)
- *   3. Portal sidecar   (vite.sqlui-portal.config.ts → dist/portal/)
+ *   2. Frontend bundle  (vite.frontend.config.mts → build/)
+ *   3. Portal sidecar   (vite.sqlui-portal.config.mts → dist/portal/)
  *      - sqlui-portal.js          : the server bundle (shebang'd, +x)
  *      - sqlui-portal-assets.json : embedded frontend (read at runtime)
  *      - package.json             : npm package manifest, bin → ./sqlui-portal.js
@@ -57,10 +57,10 @@ if (fs.existsSync(buildDir)) {
 }
 
 // 2. Frontend bundle (drops fresh build/index.html + build/assets/)
-run(["build", "--config", "vite.frontend.config.ts"]);
+run(["build", "--config", "vite.frontend.config.mts"]);
 
 // 3. Portal sidecar bundle (uses build/ as embed source)
-run(["build", "--config", "vite.sqlui-portal.config.ts"]);
+run(["build", "--config", "vite.sqlui-portal.config.mts"]);
 
 // 4. Copy launcher and chmod +x
 const launcherSrc = path.join(root, "scripts", "sqlui-portal");

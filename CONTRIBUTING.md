@@ -276,7 +276,7 @@ npm install
 npm run test-integration
 
 # 5. Run a single adapter test
-npx vitest run --config vitest.integration.config.ts src/common/adapters/RelationalDataAdapter/mysql.integration.spec.ts
+npx vitest run --config vitest.integration.config.mts src/common/adapters/RelationalDataAdapter/mysql.integration.spec.ts
 
 # 6. Cleanup containers when done
 docker compose down
@@ -474,7 +474,7 @@ Open `src/common/adapters/DataScriptFactory.spec.ts` and add your dialect to the
 npm run lint                                # check for lint errors (must have 0 errors)
 npm run typecheck                           # TypeScript type check (must have 0 errors)
 npm run test-ci                             # run unit tests (all tests must pass)
-npx vitest run --coverage.enabled           # confirm coverage stays above the thresholds in vitest.config.ts
+npx vitest run --coverage.enabled           # confirm coverage stays above the thresholds in vitest.config.mts
 npm run format                              # oxfmt and rustfmt formatting (always run LAST)
 npm start                                   # test in Tauri dev mode -- try adding a connection with your dialect
 ```

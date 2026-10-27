@@ -354,8 +354,8 @@ See [CONTRIBUTING.md](https://github.com/synle/sqlui-native/blob/main/CONTRIBUTI
 
 ### Testing & Coverage
 
-- Unit tests: `npm run test-ci` (Vitest; config in [`vitest.config.ts`](https://github.com/synle/sqlui-native/blob/main/vitest.config.ts)).
-- Integration tests (Docker required): `npm run test-integration` (config in [`vitest.integration.config.ts`](https://github.com/synle/sqlui-native/blob/main/vitest.integration.config.ts)).
+- Unit tests: `npm run test-ci` (Vitest; config in [`vitest.config.mts`](https://github.com/synle/sqlui-native/blob/main/vitest.config.mts)).
+- Integration tests (Docker required): `npm run test-integration` (config in [`vitest.integration.config.mts`](https://github.com/synle/sqlui-native/blob/main/vitest.integration.config.mts)).
 - Coverage gates run in CI on every PR — see the [Code Coverage](https://github.com/synle/sqlui-native/blob/main/CONTRIBUTING.md#code-coverage) section in CONTRIBUTING.md for the JS/TS (Vitest + V8) and Rust (`cargo-llvm-cov`) configurations.
 
 ### Adding a New Database Adapter

@@ -1,9 +1,12 @@
 import { defineConfig } from "vitest/config";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
+
+const rootDir = path.dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
   define: {
-    // Mirror vite.frontend.config.ts globals so build-info utilities import cleanly under Vitest.
+    // Mirror vite.frontend.config.mts globals so build-info utilities import cleanly under Vitest.
     __BUILD_COMMIT__: JSON.stringify("test-commit"),
     __BUILD_CHANNEL__: JSON.stringify("dev"),
     __BUILD_DATE__: JSON.stringify("2026-01-01T00:00:00Z"),
@@ -12,8 +15,8 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      src: path.resolve(__dirname, "src"),
-      "@typespec/ts-http-runtime/internal": path.resolve(__dirname, "node_modules/@typespec/ts-http-runtime/dist/commonjs"),
+      src: path.resolve(rootDir, "src"),
+      "@typespec/ts-http-runtime/internal": path.resolve(rootDir, "node_modules/@typespec/ts-http-runtime/dist/commonjs"),
     },
   },
   plugins: [

@@ -85,7 +85,7 @@ cpSync("package.json", "src/package.json");
 const rootPkg = JSON.parse(fs.readFileSync("package.json", "utf-8"));
 
 // Clean stale assets from previous builds — prevents unbounded bundle bloat
-// in portal and sidecar embeds (scripts/vite-plugin-embed-frontend.ts walks build/ recursively).
+// in portal and sidecar embeds (scripts/vite-plugin-embed-frontend.mts walks build/ recursively).
 const assetsDir = "build/assets";
 if (fs.existsSync(assetsDir)) {
   fs.rmSync(assetsDir, { recursive: true });

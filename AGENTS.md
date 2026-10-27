@@ -52,7 +52,7 @@ Adapters implement `IDataAdapter`; `DataAdapterFactory` selects implementations 
 - Keep SQL completion filtering in `src/frontend/utils/sqlCompletionContext.ts`; it is a pure heuristic, not a full SQL parser.
 - `monacoSetup.ts` loads editor and JSON workers. JavaScript/TypeScript and HTML use basic grammars, not their heavyweight language services.
 - Preserve `AdvancedEditor` lifecycle ownership: apply options in place, dispose providers/listeners, and retain cached models only through the existing model-cache lifecycle.
-- Preserve React-core vendor grouping and `stripCrossoriginPlugin()` in `vite.frontend.config.ts`; splitting React incorrectly can prevent startup.
+- Preserve React-core vendor grouping and `stripCrossoriginPlugin()` in `vite.frontend.config.mts`; splitting React incorrectly can prevent startup.
 - Preserve Tauri CSP allowances for loopback sidecar requests and GitHub access in `src-tauri/tauri.conf.json`.
 - Keep `dangerousDisableAssetCspModification: ["style-src"]` for MUI/Emotion.
 - Keep the release-only `windows_subsystem = "windows"` attribute on `src-tauri/src/main.rs`, never `lib.rs`.
@@ -99,7 +99,7 @@ Do not run E2E tests locally; leave them to CI. `npm run validate` is CI-only be
 - Mock `useLayoutModeSetting: () => "compact"` when layout mode is used, and mock `CodeEditorBox` when testing Monaco consumers.
 - Prefer `toContain` for text assertions and `toMatchInlineSnapshot` for empty/null render checks.
 - Coverage thresholds belong in configs and CI, not prose. Never lower them without an explicit reason.
-- When raising JS/TS floors, update `vitest.config.ts` and workflow `MIN_*` values together. See `DEV.md` for the existing reporting mismatch.
+- When raising JS/TS floors, update `vitest.config.mts` and workflow `MIN_*` values together. See `DEV.md` for the existing reporting mismatch.
 
 ## Skills and Releases
 

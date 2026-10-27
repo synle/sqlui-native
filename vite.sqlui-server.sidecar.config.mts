@@ -1,6 +1,7 @@
 import { defineConfig } from "vite";
 import path from "node:path";
-import { emitEmbeddedAssetsPlugin } from "./scripts/vite-plugin-embed-frontend";
+import { fileURLToPath } from "node:url";
+import { emitEmbeddedAssetsPlugin } from "./scripts/vite-plugin-embed-frontend.mts";
 
 /**
  * Only packages with native bindings (.node files) or Node built-in shims must stay external.
@@ -14,7 +15,8 @@ import { emitEmbeddedAssetsPlugin } from "./scripts/vite-plugin-embed-frontend";
  */
 const externalsDeps: string[] = [];
 
-const buildDir = path.resolve(__dirname, "build");
+const rootDir = path.dirname(fileURLToPath(import.meta.url));
+const buildDir = path.resolve(rootDir, "build");
 
 /**
  * Vite build configuration for the sqlui-server sidecar bundle.
@@ -28,6 +30,7 @@ const buildDir = path.resolve(__dirname, "build");
  *   - build/sqlui-server-assets.json      (base64 map of build/index.html + assets/)
  */
 export default defineConfig({
+  envDir: false,
   plugins: [
     emitEmbeddedAssetsPlugin({
       assetsDir: buildDir,
@@ -38,13 +41,13 @@ export default defineConfig({
     outDir: "build",
     emptyOutDir: false,
     sourcemap: false,
-    rollupOptions: {
+    rolldownOptions: {
       input: "./src/sqlui-server/index.ts",
       external: externalsDeps,
       output: {
         entryFileNames: "sqlui-server.js",
         format: "cjs",
-        inlineDynamicImports: true,
+        codeSplitting: false,
       },
     },
     target: "node18",
@@ -57,9 +60,9 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      src: path.resolve(__dirname, "src"),
-      electron: path.resolve(__dirname, "electron"),
-      typings: path.resolve(__dirname, "typings"),
+      src: path.resolve(rootDir, "src"),
+      electron: path.resolve(rootDir, "electron"),
+      typings: path.resolve(rootDir, "typings"),
     },
   },
 } as any);

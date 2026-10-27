@@ -1,6 +1,9 @@
 import { defineConfig } from "vite";
 import path from "node:path";
-import appPackage from "./package.json";
+import { fileURLToPath } from "node:url";
+import appPackage from "./package.json" with { type: "json" };
+
+const rootDir = path.dirname(fileURLToPath(import.meta.url));
 
 /**
  * All runtime dependencies (from package.json) that should remain external in the sqlui-server bundle.
@@ -28,11 +31,12 @@ function isExternal(id: string): boolean {
  * Outputs a CommonJS bundle at build/sqlui-server.js targeting Node 18.
  */
 export default defineConfig({
+  envDir: false,
   build: {
     outDir: "build",
     emptyOutDir: false,
     sourcemap: false,
-    rollupOptions: {
+    rolldownOptions: {
       input: "./src/sqlui-server/index.ts",
       external: isExternal,
       output: {
@@ -50,9 +54,9 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      src: path.resolve(__dirname, "src"),
-      electron: path.resolve(__dirname, "electron"),
-      typings: path.resolve(__dirname, "typings"),
+      src: path.resolve(rootDir, "src"),
+      electron: path.resolve(rootDir, "electron"),
+      typings: path.resolve(rootDir, "typings"),
     },
   },
 } as any);
