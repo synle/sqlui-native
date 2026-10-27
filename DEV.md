@@ -188,9 +188,20 @@ This ledger records dependency versions evaluated for this repository. “Upstre
 
 `@types/redis` latest tag is `4.0.10`, older than installed `4.0.11`; no downgrade was made.
 
-`npm audit` still reports 4 findings: 2 high through `@azure/msal-node` under Tedious and 2 moderate through `uuid` under Cosmos 3. The MSSQL adapter uses default username/password authentication, not Azure identity flows. Non-force audit repair proposes downgrading `@azure/identity`; force repair crosses the Cosmos major boundary. Both were deferred.
+`npm audit` reports 4 findings: 2 high under `@azure/msal-node` ([GHSA-xcx6-jx8p-x3h5](https://github.com/advisories/GHSA-xcx6-jx8p-x3h5)) via Tedious and 2 moderate under `uuid` ([GHSA-w5hq-g745-h8pq](https://github.com/advisories/GHSA-w5hq-g745-h8pq)) via Cosmos 3.
+
+The MSSQL adapter uses `authentication.type: "default"` with username/password; it does not configure Azure identity flows. `npm audit fix` proposes downgrading `@azure/identity`; `--force` requires Cosmos 4, so both repairs are deferred.
+
+A clean `npm ci --ignore-scripts` in a temporary directory passed, and `npm ls --depth=0` matched the manifest. Clean-install deprecations:
+
+- `node-domexception@1.0.0` via `node-fetch@3.3.2`.
+- `whatwg-encoding@3.1.1` via `jsdom@24.1.3`.
+- `@types/redis@4.0.11` is a stub.
+- `uuid@8.3.2` via `@azure/cosmos@3.17.3`.
 
 ### Tauri and Rust
+
+Tauri CLI rejects Rust/JavaScript plugin versions that differ in major or minor. The npm plugin versions below now match their Rust crates, addressing the latest observed build failure.
 
 | Package                     | Version               | Upstream changes                                                                                                                                                                                                                                                                                                                                                                                                 | Repository impact                                                                                                                                                                                 |
 | --------------------------- | --------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
