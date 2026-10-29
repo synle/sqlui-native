@@ -42,7 +42,6 @@ src/package.json
 .DS_Store
 .vs-code
 .claude/*
-!.claude/settings.json
 
 # Testing & coverage
 coverage/
