@@ -157,7 +157,14 @@ describe("SalesforceDataAdapter", () => {
       connInstance.identity.mockResolvedValueOnce({ organization_id: "00D000000000ABC" });
       const a = new SalesforceDataAdapter(validConnString);
       const dbs = await a.getDatabases();
-      expect(dbs).toEqual([{ name: "00D000000000ABC", tables: [] }]);
+      expect(dbs).toMatchInlineSnapshot(`
+        [
+          {
+            "name": "00D000000000ABC",
+            "tables": [],
+          },
+        ]
+      `);
     });
 
     test("getDatabases — fallback name when missing org id", async () => {
@@ -177,7 +184,12 @@ describe("SalesforceDataAdapter", () => {
       });
       const a = new SalesforceDataAdapter(validConnString);
       const tables = await a.getTables();
-      expect(tables.map((t) => t.name)).toEqual(["Account", "Contact"]);
+      expect(tables.map((t) => t.name)).toMatchInlineSnapshot(`
+        [
+          "Account",
+          "Contact",
+        ]
+      `);
     });
 
     test("getColumns — maps describe.fields", async () => {
@@ -191,8 +203,24 @@ describe("SalesforceDataAdapter", () => {
       });
       const a = new SalesforceDataAdapter(validConnString);
       const cols = await a.getColumns("Account");
-      expect(cols[0]).toMatchObject({ name: "Id", primaryKey: true, allowNull: false, comment: "ID" });
-      expect(cols[1]).toMatchObject({ name: "Name", primaryKey: false, allowNull: true });
+      expect(cols[0]).toMatchInlineSnapshot(`
+        {
+          "allowNull": false,
+          "comment": "ID",
+          "name": "Id",
+          "primaryKey": true,
+          "type": "id",
+        }
+      `);
+      expect(cols[1]).toMatchInlineSnapshot(`
+        {
+          "allowNull": true,
+          "comment": "Name",
+          "name": "Name",
+          "primaryKey": false,
+          "type": "string",
+        }
+      `);
     });
   });
 
@@ -208,7 +236,12 @@ describe("SalesforceDataAdapter", () => {
       expect(r.ok).toBe(true);
       expect(r.raw?.[0].attributes).toBeUndefined();
       expect(r.raw?.[0].Owner.attributes).toBeUndefined();
-      expect(r.meta).toMatchObject({ totalSize: 1, done: true });
+      expect(r.meta).toMatchInlineSnapshot(`
+        {
+          "done": true,
+          "totalSize": 1,
+        }
+      `);
     });
 
     test("SOSL FIND — searchRecords path", async () => {

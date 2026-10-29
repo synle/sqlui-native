@@ -355,18 +355,22 @@ describe("RelationalDataAdapter scripts", () => {
     it("returns SET FOREIGN_KEY_CHECKS toggles for mysql / mariadb", () => {
       const mysql = getForeignKeyToggle("mysql");
       const mariadb = getForeignKeyToggle("mariadb");
-      expect(mysql).toEqual({
-        disable: "SET FOREIGN_KEY_CHECKS = 0;",
-        enable: "SET FOREIGN_KEY_CHECKS = 1;",
-      });
+      expect(mysql).toMatchInlineSnapshot(`
+        {
+          "disable": "SET FOREIGN_KEY_CHECKS = 0;",
+          "enable": "SET FOREIGN_KEY_CHECKS = 1;",
+        }
+      `);
       expect(mariadb).toEqual(mysql);
     });
 
     it("returns PRAGMA foreign_keys toggles for sqlite", () => {
-      expect(getForeignKeyToggle("sqlite")).toEqual({
-        disable: "PRAGMA foreign_keys = OFF;",
-        enable: "PRAGMA foreign_keys = ON;",
-      });
+      expect(getForeignKeyToggle("sqlite")).toMatchInlineSnapshot(`
+        {
+          "disable": "PRAGMA foreign_keys = OFF;",
+          "enable": "PRAGMA foreign_keys = ON;",
+        }
+      `);
     });
 
     it("returns session_replication_role toggles for postgres", () => {

@@ -7,7 +7,7 @@ describe("parseGraphQLInput", () => {
     expect(result.query).toBe("{ users { id name } }");
     expect(result.variables).toBeUndefined();
     expect(result.operationName).toBeUndefined();
-    expect(result.headers).toEqual({});
+    expect(result.headers).toMatchInlineSnapshot(`{}`);
   });
 
   it("should parse a query with variables section", () => {
@@ -20,7 +20,11 @@ describe("parseGraphQLInput", () => {
 
     const result = parseGraphQLInput(input);
     expect(result.query).toContain("query GetUsers");
-    expect(result.variables).toEqual({ limit: 10 });
+    expect(result.variables).toMatchInlineSnapshot(`
+      {
+        "limit": 10,
+      }
+    `);
   });
 
   it("should parse a query with headers section", () => {
@@ -32,10 +36,12 @@ X-Custom: value`;
 
     const result = parseGraphQLInput(input);
     expect(result.query).toBe("{ users { id } }");
-    expect(result.headers).toEqual({
-      Authorization: "Bearer my-token",
-      "X-Custom": "value",
-    });
+    expect(result.headers).toMatchInlineSnapshot(`
+      {
+        "Authorization": "Bearer my-token",
+        "X-Custom": "value",
+      }
+    `);
   });
 
   it("should parse a query with operation name section", () => {
@@ -66,7 +72,12 @@ GetUsers`;
 
     const result = parseGraphQLInput(input);
     expect(result.query).toContain("query GetUsers");
-    expect(result.variables).toEqual({ limit: 10, offset: 0 });
+    expect(result.variables).toMatchInlineSnapshot(`
+      {
+        "limit": 10,
+        "offset": 0,
+      }
+    `);
     expect(result.headers["Authorization"]).toBe("Bearer {{ACCESS_TOKEN}}");
     expect(result.headers["Content-Type"]).toBe("application/json");
     expect(result.operationName).toBe("GetUsers");
@@ -87,7 +98,11 @@ X-Test: 123`;
     const result = parseGraphQLInput(input);
     expect(result.query).toBe("{ users { id } }");
     expect(result.operationName).toBe("MyOp");
-    expect(result.variables).toEqual({ key: "value" });
+    expect(result.variables).toMatchInlineSnapshot(`
+      {
+        "key": "value",
+      }
+    `);
     expect(result.headers["X-Test"]).toBe("123");
   });
 
@@ -122,7 +137,11 @@ Authorization: Bearer token
 `;
 
     const result = parseGraphQLInput(input);
-    expect(result.headers).toEqual({ Authorization: "Bearer token" });
+    expect(result.headers).toMatchInlineSnapshot(`
+      {
+        "Authorization": "Bearer token",
+      }
+    `);
   });
 
   it("should handle empty variables section gracefully", () => {

@@ -104,7 +104,10 @@ Do not run E2E tests locally; leave them to CI. `npm run validate` is CI-only be
 - Every jsdom test starts with `// @vitest-environment jsdom`.
 - Use `@testing-library/react`; mock hooks with top-level `vi.mock("src/frontend/hooks/...")`.
 - Mock `useLayoutModeSetting: () => "compact"` when layout mode is used, and mock `CodeEditorBox` when testing Monaco consumers.
-- Prefer `toContain` for text assertions and `toMatchInlineSnapshot` for empty/null render checks.
+- Prefer `toMatchInlineSnapshot` for small, deterministic object/array results, parsed payloads, metadata, and empty/null render checks.
+- Keep focused scalar, identity, relational, partial/asymmetric, and table-driven assertions when they express the contract more clearly. Prefer `toContain` for text fragments.
+- Snapshot stable public output, not implementation details or real credentials. Pin or normalize nondeterministic fields without weakening their behavioral checks.
+- Update snapshots with `npm run test:update-snapshots -- <spec-path>` and review every generated diff. Never accept changed output solely because regeneration passes.
 - Coverage thresholds belong in configs and CI, not prose. Never lower them without an explicit reason.
 - When raising JS/TS floors, update `vitest.config.mts` and workflow `MIN_*` values together. See `DEV.md` for the existing reporting mismatch.
 

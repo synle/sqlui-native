@@ -97,17 +97,18 @@ Follow the batching policy in `AGENTS.md`. Run the local pre-commit chain once a
 npm run lint && npm run typecheck && npm run test-ci && npm run format
 ```
 
-| Command                                   | Scope / caveat                                                                                         |
-| ----------------------------------------- | ------------------------------------------------------------------------------------------------------ |
-| `npm run lint`                            | `oxlint --fix src`; mutates source, not ESLint                                                         |
-| `npm run typecheck`                       | TypeScript without emit                                                                                |
-| `npm run test-ci`                         | One-shot unit suite; `pretest-ci` first builds frontend and server                                     |
-| `npm test`                                | Build followed by Vitest watch mode; unsuitable for unattended one-shot checks                         |
-| `npx vitest run src/path/to/file.spec.ts` | Focused unit test without npm's full pretest build hook                                                |
-| `npm run test-integration`                | Integration suite; local databases need Docker and cloud adapters need configured credentials          |
-| `npm run format`                          | Runs `oxfmt --write .` and `cargo fmt --manifest-path src-tauri/Cargo.toml`; can touch unrelated files |
-| `npm run format:check`                    | Checks Oxfmt and Rust formatting without writing                                                       |
-| `npm run validate`                        | CI-only: lint, typecheck, unit tests, format, E2E, smoke, integration                                  |
+| Command                                        | Scope / caveat                                                                                         |
+| ---------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| `npm run lint`                                 | `oxlint --fix src`; mutates source, not ESLint                                                         |
+| `npm run typecheck`                            | TypeScript without emit                                                                                |
+| `npm run test-ci`                              | One-shot unit suite; `pretest-ci` first builds frontend and server                                     |
+| `npm run test:update-snapshots -- <spec-path>` | One-shot inline/external snapshot update for matching unit specs; no build or directory deletion       |
+| `npm test`                                     | Build followed by Vitest watch mode; unsuitable for unattended one-shot checks                         |
+| `npx vitest run src/path/to/file.spec.ts`      | Focused unit test without npm's full pretest build hook                                                |
+| `npm run test-integration`                     | Integration suite; local databases need Docker and cloud adapters need configured credentials          |
+| `npm run format`                               | Runs `oxfmt --write .` and `cargo fmt --manifest-path src-tauri/Cargo.toml`; can touch unrelated files |
+| `npm run format:check`                         | Checks Oxfmt and Rust formatting without writing                                                       |
+| `npm run validate`                             | CI-only: lint, typecheck, unit tests, format, E2E, smoke, integration                                  |
 
 For scoped formatting, invoke the installed formatter on the exact changed paths rather than reformatting unrelated work:
 
@@ -118,6 +119,8 @@ For scoped formatting, invoke the installed formatter on the exact changed paths
 Do not run `test-e2e`, `test-smoke`, or `validate` locally. Automated browser E2E belongs in CI; explicitly requested manual checks use the `test-app` skill.
 
 For isolated unit runs, use a fresh disposable `HOME` with `SQLUI_HOME_DIR` unset. `PersistentStorage.spec.ts` asserts the default `.sqlui-native` suffix; an inherited override invalidates its fallback assumption.
+
+Use `npm run test:update-snapshots -- <spec-path>` to regenerate inline and external snapshots without deleting snapshot directories. Omit the spec filter only when intentionally updating the entire unit suite. Review every generated diff against the intended contract, then rerun the affected specs without update mode. The legacy `cleanSnapshot` command deletes external snapshot directories first; prefer the non-destructive update command.
 
 Keep explicit `SQLUI_HOME_DIR` isolation for manual app/server testing, as described above.
 

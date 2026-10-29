@@ -49,7 +49,11 @@ describe("getFrontendManualChunk", () => {
     ];
 
     const chunks = new Set(reactCoreIds.map((id) => getFrontendManualChunk(id)));
-    expect([...chunks]).toEqual(["vendor-react"]);
+    expect([...chunks]).toMatchInlineSnapshot(`
+      [
+        "vendor-react",
+      ]
+    `);
   });
 
   it("groups the remaining heavy vendors into their own chunks", () => {
@@ -79,60 +83,100 @@ describe("resolveBuildTarget", () => {
         TAURI_ENV_PLATFORM: "linux",
         TAURI_ENV_ARCH: "x86_64",
       }),
-    ).toEqual({ os: "macos", arch: "aarch64", triple: "aarch64-apple-darwin" });
+    ).toMatchInlineSnapshot(`
+      {
+        "arch": "aarch64",
+        "os": "macos",
+        "triple": "aarch64-apple-darwin",
+      }
+    `);
   });
 
   it("resolves every triple shipped by CI", () => {
-    expect(resolveBuildTarget({ TAURI_ENV_TARGET_TRIPLE: "x86_64-apple-darwin" })).toMatchObject({
-      os: "macos",
-      arch: "x86_64",
-    });
-    expect(resolveBuildTarget({ TAURI_ENV_TARGET_TRIPLE: "x86_64-pc-windows-msvc" })).toMatchObject({
-      os: "windows",
-      arch: "x86_64",
-    });
-    expect(resolveBuildTarget({ TAURI_ENV_TARGET_TRIPLE: "x86_64-unknown-linux-gnu" })).toMatchObject({
-      os: "linux",
-      arch: "x86_64",
-    });
+    expect(resolveBuildTarget({ TAURI_ENV_TARGET_TRIPLE: "x86_64-apple-darwin" })).toMatchInlineSnapshot(`
+      {
+        "arch": "x86_64",
+        "os": "macos",
+        "triple": "x86_64-apple-darwin",
+      }
+    `);
+    expect(resolveBuildTarget({ TAURI_ENV_TARGET_TRIPLE: "x86_64-pc-windows-msvc" })).toMatchInlineSnapshot(`
+      {
+        "arch": "x86_64",
+        "os": "windows",
+        "triple": "x86_64-pc-windows-msvc",
+      }
+    `);
+    expect(resolveBuildTarget({ TAURI_ENV_TARGET_TRIPLE: "x86_64-unknown-linux-gnu" })).toMatchInlineSnapshot(`
+      {
+        "arch": "x86_64",
+        "os": "linux",
+        "triple": "x86_64-unknown-linux-gnu",
+      }
+    `);
   });
 
   it("resolves the macOS universal triple", () => {
-    expect(resolveBuildTarget({ TAURI_ENV_TARGET_TRIPLE: "universal-apple-darwin" })).toMatchObject({
-      os: "macos",
-      arch: "universal",
-    });
+    expect(resolveBuildTarget({ TAURI_ENV_TARGET_TRIPLE: "universal-apple-darwin" })).toMatchInlineSnapshot(`
+      {
+        "arch": "universal",
+        "os": "macos",
+        "triple": "universal-apple-darwin",
+      }
+    `);
   });
 
   it("resolves 32-bit and gnu-abi triples", () => {
-    expect(resolveBuildTarget({ TAURI_ENV_TARGET_TRIPLE: "i686-pc-windows-msvc" })).toMatchObject({
-      os: "windows",
-      arch: "i686",
-    });
-    expect(resolveBuildTarget({ TAURI_ENV_TARGET_TRIPLE: "aarch64-unknown-linux-gnu" })).toMatchObject({
-      os: "linux",
-      arch: "aarch64",
-    });
+    expect(resolveBuildTarget({ TAURI_ENV_TARGET_TRIPLE: "i686-pc-windows-msvc" })).toMatchInlineSnapshot(`
+      {
+        "arch": "i686",
+        "os": "windows",
+        "triple": "i686-pc-windows-msvc",
+      }
+    `);
+    expect(resolveBuildTarget({ TAURI_ENV_TARGET_TRIPLE: "aarch64-unknown-linux-gnu" })).toMatchInlineSnapshot(`
+      {
+        "arch": "aarch64",
+        "os": "linux",
+        "triple": "aarch64-unknown-linux-gnu",
+      }
+    `);
   });
 
   it("falls back to the platform/arch pair when no triple is set", () => {
-    expect(resolveBuildTarget({ TAURI_ENV_PLATFORM: "darwin", TAURI_ENV_ARCH: "aarch64" })).toEqual({
-      os: "darwin",
-      arch: "aarch64",
-      triple: "",
-    });
+    expect(resolveBuildTarget({ TAURI_ENV_PLATFORM: "darwin", TAURI_ENV_ARCH: "aarch64" })).toMatchInlineSnapshot(`
+      {
+        "arch": "aarch64",
+        "os": "darwin",
+        "triple": "",
+      }
+    `);
   });
 
   it("keeps the platform when the triple has an unrecognized OS segment", () => {
-    expect(resolveBuildTarget({ TAURI_ENV_TARGET_TRIPLE: "riscv64-unknown-plan9", TAURI_ENV_PLATFORM: "plan9" })).toEqual({
-      os: "plan9",
-      arch: "riscv64",
-      triple: "riscv64-unknown-plan9",
-    });
+    expect(resolveBuildTarget({ TAURI_ENV_TARGET_TRIPLE: "riscv64-unknown-plan9", TAURI_ENV_PLATFORM: "plan9" })).toMatchInlineSnapshot(`
+      {
+        "arch": "riscv64",
+        "os": "plan9",
+        "triple": "riscv64-unknown-plan9",
+      }
+    `);
   });
 
   it("returns empty fields outside a Tauri build so the UI can fall back to the runtime host", () => {
-    expect(resolveBuildTarget({})).toEqual({ os: "", arch: "", triple: "" });
-    expect(resolveBuildTarget({ TAURI_ENV_TARGET_TRIPLE: "   " })).toEqual({ os: "", arch: "", triple: "" });
+    expect(resolveBuildTarget({})).toMatchInlineSnapshot(`
+      {
+        "arch": "",
+        "os": "",
+        "triple": "",
+      }
+    `);
+    expect(resolveBuildTarget({ TAURI_ENV_TARGET_TRIPLE: "   " })).toMatchInlineSnapshot(`
+      {
+        "arch": "",
+        "os": "",
+        "triple": "",
+      }
+    `);
   });
 });

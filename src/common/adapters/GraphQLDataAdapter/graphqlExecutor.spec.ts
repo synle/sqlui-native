@@ -32,7 +32,11 @@ describe("executeGraphQL", () => {
     expect(request.url).toBe("https://api.example.com/graphql");
     expect(request.headers["Content-Type"]).toBe("application/json");
     expect(request.headers.Accept).toBe("application/json");
-    expect(JSON.parse(request.body)).toEqual({ query: "{ hello }" });
+    expect(JSON.parse(request.body)).toMatchInlineSnapshot(`
+      {
+        "query": "{ hello }",
+      }
+    `);
     expect(timeoutMs).toBe(30_000);
   });
 
@@ -48,11 +52,15 @@ describe("executeGraphQL", () => {
     );
 
     const [request] = mockedExecuteCurl.mock.calls[0];
-    expect(JSON.parse(request.body)).toEqual({
-      query: "query Foo($id: ID!) { node(id: $id) { id } }",
-      variables: { id: "abc" },
-      operationName: "Foo",
-    });
+    expect(JSON.parse(request.body)).toMatchInlineSnapshot(`
+      {
+        "operationName": "Foo",
+        "query": "query Foo($id: ID!) { node(id: $id) { id } }",
+        "variables": {
+          "id": "abc",
+        },
+      }
+    `);
   });
 
   test("omits variables when empty", async () => {
@@ -94,11 +102,15 @@ describe("executeGraphQL", () => {
 
     expect(result.status).toBe(200);
     expect(result.statusText).toBe("OK");
-    expect(result.bodyParsed).toEqual({
-      data: { hello: "world" },
-      errors: undefined,
-      extensions: undefined,
-    });
+    expect(result.bodyParsed).toMatchInlineSnapshot(`
+      {
+        "data": {
+          "hello": "world",
+        },
+        "errors": undefined,
+        "extensions": undefined,
+      }
+    `);
     expect(result.body).toBe('{"data":{"hello":"world"}}');
   });
 
@@ -119,11 +131,19 @@ describe("executeGraphQL", () => {
     });
 
     const result = await executeGraphQL({ query: "{ broken }", headers: {} }, "https://api.example.com/graphql");
-    expect(result.bodyParsed).toEqual({
-      data: null,
-      errors: [{ message: "oops" }],
-      extensions: { requestId: "r1" },
-    });
+    expect(result.bodyParsed).toMatchInlineSnapshot(`
+      {
+        "data": null,
+        "errors": [
+          {
+            "message": "oops",
+          },
+        ],
+        "extensions": {
+          "requestId": "r1",
+        },
+      }
+    `);
     // ensure we strip unknown fields, not pass through whole object
     expect((result.bodyParsed as Record<string, unknown>).ignored).toBeUndefined();
   });

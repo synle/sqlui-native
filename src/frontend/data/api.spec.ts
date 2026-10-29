@@ -223,21 +223,35 @@ describe("ProxyApi", () => {
     const c = (fetch as any).mock.calls[(fetch as any).mock.calls.length - 1];
     const payload = JSON.parse(c[1].body);
     expect(payload).toHaveProperty("props");
-    expect(payload.props).toEqual({ foo: "bar" });
+    expect(payload.props).toMatchInlineSnapshot(`
+      {
+        "foo": "bar",
+      }
+    `);
   });
 
   test("updateManagedTable sends body as-is when 'name' key is present", async () => {
     await ProxyApi.updateManagedTable("c", "db", "t1", { name: "renamed" });
     const c = (fetch as any).mock.calls[(fetch as any).mock.calls.length - 1];
     const payload = JSON.parse(c[1].body);
-    expect(payload).toEqual({ name: "renamed" });
+    expect(payload).toMatchInlineSnapshot(`
+      {
+        "name": "renamed",
+      }
+    `);
   });
 
   test("updateManagedTable sends body as-is when 'props' key is present", async () => {
     await ProxyApi.updateManagedTable("c", "db", "t1", { props: { foo: "bar" } as any });
     const c = (fetch as any).mock.calls[(fetch as any).mock.calls.length - 1];
     const payload = JSON.parse(c[1].body);
-    expect(payload).toEqual({ props: { foo: "bar" } });
+    expect(payload).toMatchInlineSnapshot(`
+      {
+        "props": {
+          "foo": "bar",
+        },
+      }
+    `);
   });
 
   test("searchSchema URL-encodes the query parameter", async () => {
@@ -336,7 +350,11 @@ describe("ProxyApi", () => {
         text: () => Promise.resolve(JSON.stringify({ error: "bad" })),
       }),
     );
-    await expect(ProxyApi.getConfigs()).rejects.toEqual({ error: "bad" });
+    await expect(ProxyApi.getConfigs()).rejects.toMatchInlineSnapshot(`
+      {
+        "error": "bad",
+      }
+    `);
   });
 
   test("non-JSON response body falls back to raw text", async () => {

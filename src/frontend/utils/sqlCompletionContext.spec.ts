@@ -23,11 +23,22 @@ const labels = (items: CompletionItem[]) => items.map((item) => item.label);
 describe("parseTableAliases", () => {
   test("maps aliases with and without AS, plus bare table names", () => {
     const aliases = parseTableAliases("SELECT * FROM customers c JOIN acme.orders AS o ON o.customer_id = c.id");
-    expect(Object.fromEntries(aliases)).toEqual({ customers: "customers", c: "customers", orders: "orders", o: "orders" });
+    expect(Object.fromEntries(aliases)).toMatchInlineSnapshot(`
+      {
+        "c": "customers",
+        "customers": "customers",
+        "o": "orders",
+        "orders": "orders",
+      }
+    `);
   });
 
   test("does not treat a following keyword as an alias", () => {
-    expect(Object.fromEntries(parseTableAliases("SELECT * FROM orders WHERE id = 1"))).toEqual({ orders: "orders" });
+    expect(Object.fromEntries(parseTableAliases("SELECT * FROM orders WHERE id = 1"))).toMatchInlineSnapshot(`
+      {
+        "orders": "orders",
+      }
+    `);
   });
 
   test("strips identifier quoting", () => {
@@ -41,18 +52,34 @@ describe("getContextualCompletions", () => {
   test("alias. suggests the aliased table's columns, even when the alias is declared after the cursor", () => {
     const sql = "SELECT o. FROM orders o";
     const result = getContextualCompletions("SELECT o.", sql, ITEMS, COLUMNS);
-    expect(labels(result)).toEqual(["id", "customer_id", "total"]);
+    expect(labels(result)).toMatchInlineSnapshot(`
+      [
+        "id",
+        "customer_id",
+        "total",
+      ]
+    `);
   });
 
   test("table. resolves table names case-insensitively", () => {
     const result = getContextualCompletions("SELECT customers.na", "SELECT customers.na FROM customers", ITEMS, COLUMNS);
-    expect(labels(result)).toEqual(["id", "name"]);
+    expect(labels(result)).toMatchInlineSnapshot(`
+      [
+        "id",
+        "name",
+      ]
+    `);
     expect(result[1].detail).toBe("Column (customers - text)");
   });
 
   test("database. suggests tables", () => {
     const result = getContextualCompletions("SELECT * FROM acme.", "SELECT * FROM acme.", ITEMS, COLUMNS);
-    expect(labels(result)).toEqual(["customers", "orders"]);
+    expect(labels(result)).toMatchInlineSnapshot(`
+      [
+        "customers",
+        "orders",
+      ]
+    `);
   });
 
   test("unknown qualifier falls back to the full list", () => {

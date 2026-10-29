@@ -25,7 +25,14 @@ describe("FileDataAdapterScripts", () => {
   });
 
   test("offers an absolute-path field, icon, and JavaScript query mode", () => {
-    expect(FileDataAdapterScripts.getConnectionFormInputs("json")).toEqual([["filePath", "Absolute file path"]]);
+    expect(FileDataAdapterScripts.getConnectionFormInputs("json")).toMatchInlineSnapshot(`
+      [
+        [
+          "filePath",
+          "Absolute file path",
+        ],
+      ]
+    `);
     expect(FileDataAdapterScripts.getDialectIcon()).toContain("file.png");
     expect(FileDataAdapterScripts.getSyntaxMode()).toBe("javascript");
   });
@@ -35,10 +42,16 @@ describe("FileDataAdapterScripts", () => {
     const command = getTableActions(input)[0];
     const sample = FileDataAdapterScripts.getSampleSelectQuery(input);
 
-    expect(command).toMatchObject({ label: "Select JSON", formatter: "js" });
+    expect(command).toMatchInlineSnapshot(`
+      {
+        "formatter": "js",
+        "label": "Select JSON",
+        "query": "display(res_json);",
+      }
+    `);
     expect(command.query).toContain("display(res_json)");
     expect(sample?.query).toBe("display(res_json);");
-    expect(FileDataAdapterScripts.getDatabaseScripts()).toEqual([]);
-    expect(FileDataAdapterScripts.getConnectionScripts()).toEqual([]);
+    expect(FileDataAdapterScripts.getDatabaseScripts()).toMatchInlineSnapshot(`[]`);
+    expect(FileDataAdapterScripts.getConnectionScripts()).toMatchInlineSnapshot(`[]`);
   });
 });

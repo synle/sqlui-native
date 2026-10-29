@@ -36,8 +36,22 @@ describe("FileDataAdapter", () => {
     const adapter = new FileDataAdapter(makeConnection("json", filePath));
 
     await expect(adapter.authenticate()).resolves.toBeUndefined();
-    await expect(adapter.getDatabases()).resolves.toEqual([{ name: "people with spaces.json", tables: [] }]);
-    await expect(adapter.getTables(undefined)).resolves.toEqual([{ name: "people with spaces.json", columns: [] }]);
+    await expect(adapter.getDatabases()).resolves.toMatchInlineSnapshot(`
+      [
+        {
+          "name": "people with spaces.json",
+          "tables": [],
+        },
+      ]
+    `);
+    await expect(adapter.getTables(undefined)).resolves.toMatchInlineSnapshot(`
+      [
+        {
+          "columns": [],
+          "name": "people with spaces.json",
+        },
+      ]
+    `);
     await expect(adapter.getColumns("people with spaces.json", undefined)).resolves.toContainEqual({
       name: "items",
       propertyPath: ["items"],
@@ -48,14 +62,22 @@ describe("FileDataAdapter", () => {
     const result = await adapter.execute("", undefined, undefined);
 
     expect(result.ok).toBe(true);
-    expect(result.raw).toEqual([
-      {
-        items: [
-          { name: "Ada", age: 17 },
-          { name: "Grace", age: 18 },
-        ],
-      },
-    ]);
+    expect(result.raw).toMatchInlineSnapshot(`
+      [
+        {
+          "items": [
+            {
+              "age": 17,
+              "name": "Ada",
+            },
+            {
+              "age": 18,
+              "name": "Grace",
+            },
+          ],
+        },
+      ]
+    `);
     expect(result.meta).toEqual({ isFileData: true, rawSource: source, sourceFormat: "json" });
     await adapter.disconnect();
   });
@@ -67,7 +89,18 @@ describe("FileDataAdapter", () => {
 
     const result = await adapter.execute("res_json = res_json.items.filter(item.age >= 18); display(res_json);", undefined, undefined);
 
-    expect(result.raw).toEqual([[{ age: 18 }, { age: 22 }]]);
+    expect(result.raw).toMatchInlineSnapshot(`
+      [
+        [
+          {
+            "age": 18,
+          },
+          {
+            "age": 22,
+          },
+        ],
+      ]
+    `);
   });
 
   test("infers columns for root arrays and scalar documents", async () => {

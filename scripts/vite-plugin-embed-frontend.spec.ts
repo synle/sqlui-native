@@ -27,7 +27,12 @@ describe("buildEmbeddedAssetMap", () => {
     writeFile("favicon.ico", "binary");
 
     const map = buildEmbeddedAssetMap(tmpDir);
-    expect(Object.keys(map).sort()).toEqual(["favicon.ico", "index.html"]);
+    expect(Object.keys(map).sort()).toMatchInlineSnapshot(`
+      [
+        "favicon.ico",
+        "index.html",
+      ]
+    `);
     expect(Buffer.from(map["index.html"], "base64").toString("utf-8")).toBe("<!doctype html><body>hi</body>");
   });
 
@@ -36,7 +41,12 @@ describe("buildEmbeddedAssetMap", () => {
     writeFile("assets/style.css", "body{color:red}");
 
     const map = buildEmbeddedAssetMap(tmpDir);
-    expect(Object.keys(map).sort()).toEqual(["assets/index-abc.js", "assets/style.css"]);
+    expect(Object.keys(map).sort()).toMatchInlineSnapshot(`
+      [
+        "assets/index-abc.js",
+        "assets/style.css",
+      ]
+    `);
   });
 
   test("skips dotfiles and *.map source maps", () => {
@@ -46,7 +56,12 @@ describe("buildEmbeddedAssetMap", () => {
     writeFile("assets/index-abc.js.map", "{}");
 
     const map = buildEmbeddedAssetMap(tmpDir);
-    expect(Object.keys(map).sort()).toEqual(["assets/index-abc.js", "index.html"]);
+    expect(Object.keys(map).sort()).toMatchInlineSnapshot(`
+      [
+        "assets/index-abc.js",
+        "index.html",
+      ]
+    `);
   });
 
   test("skips sibling sqlui-server*.{js,json} to avoid self-embedding", () => {
@@ -58,7 +73,11 @@ describe("buildEmbeddedAssetMap", () => {
     writeFile("sqlui-server.js.map", "{}"); // also covered by .map filter
 
     const map = buildEmbeddedAssetMap(tmpDir);
-    expect(Object.keys(map)).toEqual(["index.html"]);
+    expect(Object.keys(map)).toMatchInlineSnapshot(`
+      [
+        "index.html",
+      ]
+    `);
   });
 
   test("does not descend into node_modules", () => {
@@ -67,11 +86,15 @@ describe("buildEmbeddedAssetMap", () => {
     writeFile("node_modules/.package-lock.json", "{}");
 
     const map = buildEmbeddedAssetMap(tmpDir);
-    expect(Object.keys(map)).toEqual(["index.html"]);
+    expect(Object.keys(map)).toMatchInlineSnapshot(`
+      [
+        "index.html",
+      ]
+    `);
   });
 
   test("returns an empty map when the directory does not exist", () => {
     const map = buildEmbeddedAssetMap(path.join(tmpDir, "missing"));
-    expect(map).toEqual({});
+    expect(map).toMatchInlineSnapshot(`{}`);
   });
 });

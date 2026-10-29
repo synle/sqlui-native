@@ -13,16 +13,34 @@ describe("evaluateDataQuery", () => {
   test("filters with the implicit item predicate syntax", () => {
     const result = evaluateDataQuery("res_json = res_json.items.filter(item.age >= 18); display(res_json);", data);
 
-    expect(result).toEqual([
-      { age: 18, active: true, name: "Grace" },
-      { age: 22, active: false, name: "Lin" },
-    ]);
+    expect(result).toMatchInlineSnapshot(`
+      [
+        {
+          "active": true,
+          "age": 18,
+          "name": "Grace",
+        },
+        {
+          "active": false,
+          "age": 22,
+          "name": "Lin",
+        },
+      ]
+    `);
   });
 
   test("filters with a parenthesized arrow callback and logical comparisons", () => {
     const result = evaluateDataQuery("display(res_json.items.filter((item) => item.age >= 18 && item.active === true));", data);
 
-    expect(result).toEqual([{ age: 18, active: true, name: "Grace" }]);
+    expect(result).toMatchInlineSnapshot(`
+      [
+        {
+          "active": true,
+          "age": 18,
+          "name": "Grace",
+        },
+      ]
+    `);
   });
 
   test("maps, searches, and slices values", () => {
@@ -31,24 +49,41 @@ describe("evaluateDataQuery", () => {
       data,
     );
 
-    expect(result).toEqual(["Grace"]);
+    expect(result).toMatchInlineSnapshot(`
+      [
+        "Grace",
+      ]
+    `);
   });
 
   test("supports slice with one bound and single-quoted strings", () => {
     const result = evaluateDataQuery("display(res_json.items.map(item => item.name).slice(1));", data);
 
-    expect(result).toEqual(["Grace", "Lin"]);
-    expect(evaluateDataQuery("display(res_json.items.find(item => item.name === 'Grace'));", data)).toEqual({
-      age: 18,
-      active: true,
-      name: "Grace",
-    });
+    expect(result).toMatchInlineSnapshot(`
+      [
+        "Grace",
+        "Lin",
+      ]
+    `);
+    expect(evaluateDataQuery("display(res_json.items.find(item => item.name === 'Grace'));", data)).toMatchInlineSnapshot(`
+      {
+        "active": true,
+        "age": 18,
+        "name": "Grace",
+      }
+    `);
   });
 
   test("finds one matching value and reads bracket properties", () => {
     const result = evaluateDataQuery('display(res_json["items"].find(item => item.age >= 18));', data);
 
-    expect(result).toEqual({ age: 18, active: true, name: "Grace" });
+    expect(result).toMatchInlineSnapshot(`
+      {
+        "active": true,
+        "age": 18,
+        "name": "Grace",
+      }
+    `);
   });
 
   test.each([
@@ -74,13 +109,30 @@ describe("evaluateDataQuery", () => {
   });
 
   test("short-circuits boolean conditions and supports logical negation", () => {
-    expect(evaluateDataQuery("display(res_json.items.filter(item => item.active === false || item.age < 18));", data)).toEqual([
-      { age: 17, active: true, name: "Ada" },
-      { age: 22, active: false, name: "Lin" },
-    ]);
-    expect(evaluateDataQuery("display(res_json.items.filter(item => !item.active));", data)).toEqual([
-      { age: 22, active: false, name: "Lin" },
-    ]);
+    expect(evaluateDataQuery("display(res_json.items.filter(item => item.active === false || item.age < 18));", data))
+      .toMatchInlineSnapshot(`
+      [
+        {
+          "active": true,
+          "age": 17,
+          "name": "Ada",
+        },
+        {
+          "active": false,
+          "age": 22,
+          "name": "Lin",
+        },
+      ]
+    `);
+    expect(evaluateDataQuery("display(res_json.items.filter(item => !item.active));", data)).toMatchInlineSnapshot(`
+      [
+        {
+          "active": false,
+          "age": 22,
+          "name": "Lin",
+        },
+      ]
+    `);
   });
 
   test.each([
@@ -98,7 +150,13 @@ describe("evaluateDataQuery", () => {
   test("reads collection lengths and indexes, and searches arrays", () => {
     expect(evaluateDataQuery("display(res_json.items.length);", data)).toBe(3);
     expect(evaluateDataQuery('display("sample".length);', data)).toBe(6);
-    expect(evaluateDataQuery("display(res_json.items[0]);", data)).toEqual({ age: 17, active: true, name: "Ada" });
+    expect(evaluateDataQuery("display(res_json.items[0]);", data)).toMatchInlineSnapshot(`
+      {
+        "active": true,
+        "age": 17,
+        "name": "Ada",
+      }
+    `);
     expect(evaluateDataQuery("display(res_json.items.includes(res_json.items[0]));", data)).toBe(true);
     expect(evaluateDataQuery("display(res_json.missing);", data)).toBeUndefined();
   });

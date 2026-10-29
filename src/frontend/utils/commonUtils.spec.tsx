@@ -231,7 +231,14 @@ describe("commonUtils", () => {
 
     test("should put special column names in order", () => {
       const actual = commonUtils.sortColumnNamesForUnknownData(["etag", "partitionKey", "rowKey", "_id"]);
-      expect(actual).toEqual(["_id", "rowKey", "partitionKey", "etag"]);
+      expect(actual).toMatchInlineSnapshot(`
+        [
+          "_id",
+          "rowKey",
+          "partitionKey",
+          "etag",
+        ]
+      `);
     });
 
     test("should put columns ending with 'id' before other columns", () => {
@@ -242,17 +249,27 @@ describe("commonUtils", () => {
 
     test("should sort non-special columns alphabetically", () => {
       const actual = commonUtils.sortColumnNamesForUnknownData(["zebra", "apple", "mango"]);
-      expect(actual).toEqual(["apple", "mango", "zebra"]);
+      expect(actual).toMatchInlineSnapshot(`
+        [
+          "apple",
+          "mango",
+          "zebra",
+        ]
+      `);
     });
 
     test("should handle empty array", () => {
       const actual = commonUtils.sortColumnNamesForUnknownData([]);
-      expect(actual).toEqual([]);
+      expect(actual).toMatchInlineSnapshot(`[]`);
     });
 
     test("should handle single item", () => {
       const actual = commonUtils.sortColumnNamesForUnknownData(["name"]);
-      expect(actual).toEqual(["name"]);
+      expect(actual).toMatchInlineSnapshot(`
+        [
+          "name",
+        ]
+      `);
     });
 
     test("should handle mixed special and regular columns", () => {

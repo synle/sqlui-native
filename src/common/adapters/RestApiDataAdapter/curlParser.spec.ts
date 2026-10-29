@@ -52,7 +52,12 @@ describe("curlParser", () => {
 
     it("parses basic auth with -u", () => {
       const result = parseCurlCommand("curl -u 'user:pass123' 'https://example.com'");
-      expect(result.auth).toEqual({ username: "user", password: "pass123" });
+      expect(result.auth).toMatchInlineSnapshot(`
+        {
+          "password": "pass123",
+          "username": "user",
+        }
+      `);
     });
 
     it("parses cookies with -b", () => {
@@ -85,21 +90,35 @@ describe("curlParser", () => {
     it("parses form data with -F", () => {
       const result = parseCurlCommand("curl -X POST 'https://example.com' -F 'field1=value1' -F 'field2=value2'");
       expect(result.bodyType).toBe("form-data");
-      expect(result.formParts).toEqual(["field1=value1", "field2=value2"]);
+      expect(result.formParts).toMatchInlineSnapshot(`
+        [
+          "field1=value1",
+          "field2=value2",
+        ]
+      `);
       expect(result.body).toBeUndefined();
     });
 
     it("parses file upload with -F", () => {
       const result = parseCurlCommand("curl -X POST 'https://example.com' -F 'file=@/path/to/file' -F 'description=my upload'");
       expect(result.bodyType).toBe("form-data");
-      expect(result.formParts).toEqual(["file=@/path/to/file", "description=my upload"]);
+      expect(result.formParts).toMatchInlineSnapshot(`
+        [
+          "file=@/path/to/file",
+          "description=my upload",
+        ]
+      `);
     });
 
     it("defaults to POST when -F form parts are present without explicit method", () => {
       const result = parseCurlCommand("curl 'https://example.com/upload' -F 'file=@/path/to/file'");
       expect(result.method).toBe("POST");
       expect(result.bodyType).toBe("form-data");
-      expect(result.formParts).toEqual(["file=@/path/to/file"]);
+      expect(result.formParts).toMatchInlineSnapshot(`
+        [
+          "file=@/path/to/file",
+        ]
+      `);
     });
 
     it("builds curl with -F for form parts", () => {

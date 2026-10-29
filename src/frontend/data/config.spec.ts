@@ -44,19 +44,27 @@ describe("SessionStorageConfig", () => {
   test("set and get a value", () => {
     SessionStorageConfig.set("clientConfig/cache.treeVisibles", { a: true });
     const result = SessionStorageConfig.get("clientConfig/cache.treeVisibles");
-    expect(result).toEqual({ a: true });
+    expect(result).toMatchInlineSnapshot(`
+      {
+        "a": true,
+      }
+    `);
   });
 
   test("get returns defaultValue when key is missing", () => {
     const result = SessionStorageConfig.get("clientConfig/cache.treeVisibles", { fallback: true });
-    expect(result).toEqual({ fallback: true });
+    expect(result).toMatchInlineSnapshot(`
+      {
+        "fallback": true,
+      }
+    `);
   });
 
   test("clear removes all items", () => {
     SessionStorageConfig.set("clientConfig/cache.treeVisibles", { a: true });
     SessionStorageConfig.clear();
     const result = SessionStorageConfig.get("clientConfig/cache.treeVisibles", {});
-    expect(result).toEqual({});
+    expect(result).toMatchInlineSnapshot(`{}`);
   });
 });
 

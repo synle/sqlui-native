@@ -83,41 +83,65 @@ describe("variableResolver", () => {
   describe("extractVariableNames", () => {
     it("extracts variable names", () => {
       const names = extractVariableNames("{{HOST}}/{{PATH}}?t={{TOKEN}}");
-      expect(names).toEqual(["HOST", "PATH", "TOKEN"]);
+      expect(names).toMatchInlineSnapshot(`
+        [
+          "HOST",
+          "PATH",
+          "TOKEN",
+        ]
+      `);
     });
 
     it("returns empty array for no variables", () => {
-      expect(extractVariableNames("no vars")).toEqual([]);
+      expect(extractVariableNames("no vars")).toMatchInlineSnapshot(`[]`);
     });
 
     it("extracts dynamic variable names", () => {
       const names = extractVariableNames("{{$timestamp}} {{$randomUUID}}");
-      expect(names).toEqual(["$timestamp", "$randomUUID"]);
+      expect(names).toMatchInlineSnapshot(`
+        [
+          "$timestamp",
+          "$randomUUID",
+        ]
+      `);
     });
   });
 
   describe("findUnresolvedVariables", () => {
     it("returns unresolved variable names from resolved string", () => {
       const resolved = "https://api.com/{{UNKNOWN_PATH}}?token={{MISSING_TOKEN}}";
-      expect(findUnresolvedVariables(resolved)).toEqual(["UNKNOWN_PATH", "MISSING_TOKEN"]);
+      expect(findUnresolvedVariables(resolved)).toMatchInlineSnapshot(`
+        [
+          "UNKNOWN_PATH",
+          "MISSING_TOKEN",
+        ]
+      `);
     });
 
     it("returns empty array when all variables are resolved", () => {
-      expect(findUnresolvedVariables("https://api.com/users?token=abc")).toEqual([]);
+      expect(findUnresolvedVariables("https://api.com/users?token=abc")).toMatchInlineSnapshot(`[]`);
     });
 
     it("deduplicates repeated unresolved variables", () => {
       const resolved = "{{HOST}}/api and {{HOST}}/health";
-      expect(findUnresolvedVariables(resolved)).toEqual(["HOST"]);
+      expect(findUnresolvedVariables(resolved)).toMatchInlineSnapshot(`
+        [
+          "HOST",
+        ]
+      `);
     });
 
     it("skips dynamic variable names starting with $", () => {
       const resolved = "{{$timestamp}} {{MISSING}}";
-      expect(findUnresolvedVariables(resolved)).toEqual(["MISSING"]);
+      expect(findUnresolvedVariables(resolved)).toMatchInlineSnapshot(`
+        [
+          "MISSING",
+        ]
+      `);
     });
 
     it("returns empty array for string with no placeholders", () => {
-      expect(findUnresolvedVariables("no variables here")).toEqual([]);
+      expect(findUnresolvedVariables("no variables here")).toMatchInlineSnapshot(`[]`);
     });
   });
 });

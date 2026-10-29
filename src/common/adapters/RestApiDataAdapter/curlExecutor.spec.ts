@@ -61,7 +61,11 @@ describe("executeCurl", () => {
       expect(result.statusText).toBe("OK");
       expect(result.headers["Content-Type"]).toBe("application/json");
       expect(result.body).toBe(jsonBody);
-      expect(result.bodyParsed).toEqual({ message: "hello" });
+      expect(result.bodyParsed).toMatchInlineSnapshot(`
+        {
+          "message": "hello",
+        }
+      `);
       expect(result.timing.total).toBe(123);
       expect(result.timing.dns).toBe(10);
       expect(result.timing.connect).toBe(20);
@@ -88,7 +92,11 @@ describe("executeCurl", () => {
 
       const result = await executeCurl(makeRequest());
 
-      expect(result.cookies).toEqual({ session: "abc123" });
+      expect(result.cookies).toMatchInlineSnapshot(`
+        {
+          "session": "abc123",
+        }
+      `);
     });
 
     it("should accumulate multiple Set-Cookie headers into cookies map", async () => {
@@ -98,7 +106,12 @@ describe("executeCurl", () => {
 
       const result = await executeCurl(makeRequest());
 
-      expect(result.cookies).toEqual({ session: "abc123", theme: "dark" });
+      expect(result.cookies).toMatchInlineSnapshot(`
+        {
+          "session": "abc123",
+          "theme": "dark",
+        }
+      `);
       // Duplicate headers should be joined with comma separator
       expect(result.headers["Set-Cookie"]).toContain("session=abc123");
       expect(result.headers["Set-Cookie"]).toContain("theme=dark");
@@ -123,7 +136,11 @@ describe("executeCurl", () => {
 
       expect(result.status).toBe(200);
       expect(result.statusText).toBe("OK");
-      expect(result.bodyParsed).toEqual({ data: true });
+      expect(result.bodyParsed).toMatchInlineSnapshot(`
+        {
+          "data": true,
+        }
+      `);
     });
 
     it("should resolve when curl error occurs but stdout is present", async () => {
@@ -298,13 +315,15 @@ describe("executeCurl", () => {
 
       const result = await executeCurl(makeRequest());
 
-      expect(result.timing).toEqual({
-        total: 456,
-        dns: 12,
-        connect: 34,
-        tls: 78,
-        ttfb: 123,
-      });
+      expect(result.timing).toMatchInlineSnapshot(`
+        {
+          "connect": 34,
+          "dns": 12,
+          "tls": 78,
+          "total": 456,
+          "ttfb": 123,
+        }
+      `);
     });
 
     it("should default to zero timing on invalid timing JSON", async () => {
@@ -313,7 +332,11 @@ describe("executeCurl", () => {
 
       const result = await executeCurl(makeRequest());
 
-      expect(result.timing).toEqual({ total: 0 });
+      expect(result.timing).toMatchInlineSnapshot(`
+        {
+          "total": 0,
+        }
+      `);
     });
   });
 

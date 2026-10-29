@@ -74,21 +74,35 @@ describe("GraphQLDataAdapter", () => {
   describe("runDiagnostics", () => {
     test("no ENDPOINT — empty array", async () => {
       const a = new GraphQLDataAdapter("graphql://{}");
-      await expect(a.runDiagnostics()).resolves.toEqual([]);
+      await expect(a.runDiagnostics()).resolves.toMatchInlineSnapshot(`[]`);
     });
 
     test("successful introspection", async () => {
       mockExecuteCurl.mockResolvedValueOnce({ status: 200, statusText: "OK" });
       const a = new GraphQLDataAdapter(`graphql://${JSON.stringify({ ENDPOINT: "https://api.example.com/graphql" })}`);
       const out = await a.runDiagnostics();
-      expect(out).toEqual([{ name: "Introspection", success: true, message: "200 OK" }]);
+      expect(out).toMatchInlineSnapshot(`
+        [
+          {
+            "message": "200 OK",
+            "name": "Introspection",
+            "success": true,
+          },
+        ]
+      `);
     });
 
     test("curl error — non-fatal, returns failure result", async () => {
       mockExecuteCurl.mockRejectedValueOnce(new Error("curl: (6) Could not resolve host: example.invalid"));
       const a = new GraphQLDataAdapter(`graphql://${JSON.stringify({ ENDPOINT: "https://example.invalid" })}`);
       const out = await a.runDiagnostics();
-      expect(out[0]).toMatchObject({ name: "Introspection", success: false });
+      expect(out[0]).toMatchInlineSnapshot(`
+        {
+          "message": "curl: (6) Could not resolve host: example.invalid",
+          "name": "Introspection",
+          "success": false,
+        }
+      `);
       expect(out[0].message).toContain("curl: (6)");
     });
 
@@ -103,14 +117,21 @@ describe("GraphQLDataAdapter", () => {
   describe("metadata methods", () => {
     const a = new GraphQLDataAdapter("graphql://{}");
     test("getDatabases returns []", async () => {
-      await expect(a.getDatabases()).resolves.toEqual([]);
+      await expect(a.getDatabases()).resolves.toMatchInlineSnapshot(`[]`);
     });
     test("getTables returns []", async () => {
-      await expect(a.getTables()).resolves.toEqual([]);
+      await expect(a.getTables()).resolves.toMatchInlineSnapshot(`[]`);
     });
     test("getColumns returns request shape metadata", async () => {
       const cols = await a.getColumns();
-      expect(cols.map((c) => c.name)).toEqual(["query", "variables", "operationName", "headers"]);
+      expect(cols.map((c) => c.name)).toMatchInlineSnapshot(`
+        [
+          "query",
+          "variables",
+          "operationName",
+          "headers",
+        ]
+      `);
     });
     test("disconnect is no-op", async () => {
       await expect(a.disconnect()).resolves.toBeUndefined();
@@ -152,7 +173,11 @@ describe("GraphQLDataAdapter", () => {
       const a = new GraphQLDataAdapter(`graphql://${JSON.stringify({ ENDPOINT: "https://api.example.com/graphql" })}`);
       const r = await a.execute("{ __typename }");
       expect(r.ok).toBe(true);
-      expect(r.raw?.[0].data).toEqual({ x: 1 });
+      expect(r.raw?.[0].data).toMatchInlineSnapshot(`
+        {
+          "x": 1,
+        }
+      `);
       expect(r.meta?.isGraphQL).toBe(true);
       expect(r.meta?.requestEndpoint).toBe("https://api.example.com/graphql");
       expect(mockExecuteGraphQL).toHaveBeenCalledTimes(1);

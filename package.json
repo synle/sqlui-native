@@ -56,6 +56,7 @@
     "test": "vitest --watch",
     "pretest-ci": "npm run pretest",
     "test-ci": "vitest run",
+    "test:update-snapshots": "vitest run --update=all",
     "test-integration": "vitest run --config vitest.integration.config.mts",
     "start-e2e": "concurrently \"node build/sqlui-server.js\" \"vite preview --config vite.frontend.config.mts --strictPort\"",
     "test-e2e": "npx playwright test",

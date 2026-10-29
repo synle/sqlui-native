@@ -112,39 +112,49 @@ describe("buildInfo", () => {
 
   describe("resolvePlatformLabels", () => {
     test("prefers the build target over the runtime host", () => {
-      expect(resolvePlatformLabels({ platform: "linux", arch: "x64" }, { os: "macos", arch: "aarch64" })).toEqual({
-        osLabel: "macOS",
-        archLabel: "ARM64 (Apple Silicon) \u00b7 64-bit",
-      });
+      expect(resolvePlatformLabels({ platform: "linux", arch: "x64" }, { os: "macos", arch: "aarch64" })).toMatchInlineSnapshot(`
+        {
+          "archLabel": "ARM64 (Apple Silicon) · 64-bit",
+          "osLabel": "macOS",
+        }
+      `);
     });
 
     test("falls back to the runtime host when there is no build target", () => {
-      expect(resolvePlatformLabels({ platform: "win32", arch: "x64" }, { os: "", arch: "" })).toEqual({
-        osLabel: "Windows",
-        archLabel: "x64 (Intel/AMD) \u00b7 64-bit",
-      });
+      expect(resolvePlatformLabels({ platform: "win32", arch: "x64" }, { os: "", arch: "" })).toMatchInlineSnapshot(`
+        {
+          "archLabel": "x64 (Intel/AMD) · 64-bit",
+          "osLabel": "Windows",
+        }
+      `);
     });
 
     test("falls back per field when the target is only partially known", () => {
-      expect(resolvePlatformLabels({ platform: "darwin", arch: "arm64" }, { os: "", arch: "x86_64" })).toEqual({
-        osLabel: "macOS",
-        archLabel: "x64 (Intel) \u00b7 64-bit",
-      });
+      expect(resolvePlatformLabels({ platform: "darwin", arch: "arm64" }, { os: "", arch: "x86_64" })).toMatchInlineSnapshot(`
+        {
+          "archLabel": "x64 (Intel) · 64-bit",
+          "osLabel": "macOS",
+        }
+      `);
     });
 
     test("reports Unknown when neither source knows anything", () => {
-      expect(resolvePlatformLabels(undefined, { os: "", arch: "" })).toEqual({
-        osLabel: "Unknown",
-        archLabel: "Unknown",
-      });
+      expect(resolvePlatformLabels(undefined, { os: "", arch: "" })).toMatchInlineSnapshot(`
+        {
+          "archLabel": "Unknown",
+          "osLabel": "Unknown",
+        }
+      `);
     });
 
     test("uses the build-time globals when no target override is given", () => {
       // vitest.config.mts stubs the target globals as empty, so the host wins here.
-      expect(resolvePlatformLabels({ platform: "linux", arch: "x64" })).toEqual({
-        osLabel: "Linux",
-        archLabel: "x64 (Intel/AMD) \u00b7 64-bit",
-      });
+      expect(resolvePlatformLabels({ platform: "linux", arch: "x64" })).toMatchInlineSnapshot(`
+        {
+          "archLabel": "x64 (Intel/AMD) · 64-bit",
+          "osLabel": "Linux",
+        }
+      `);
     });
   });
 });
