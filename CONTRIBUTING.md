@@ -6,11 +6,9 @@ This guide covers database fixtures, adapter development, and dialect-specific r
 
 ## Bootstrap script for connections
 
-### Requirement
+### Requirements
 
-- NODE_VERSION: 24 (use `fnm` to switch: `fnm use 24`)
-- npm (bundled with Node)
-- Docker (for integration tests)
+Use the Node version in `.node-version` and npm. See [DEV.md](DEV.md#prerequisites) for setup and lifecycle-script safety; local database fixtures also require Docker.
 
 ### Sample Import Files
 
@@ -189,12 +187,7 @@ The repo includes `.vscode/launch.json` and `.vscode/tasks.json` with pre-config
 
 ### How to run locally?
 
-```bash
-npm install
-
-npm start       # Tauri dev mode
-npm run dev     # Browser mode — http://localhost:3000
-```
+Follow [DEV.md](DEV.md#start-development) for installation, startup commands, disposable profiles, and port-ownership checks.
 
 ### Tauri Sidecar Lifecycle
 
@@ -255,7 +248,9 @@ docker exec sqlui_redis redis-cli ping
 
 ## Integration Tests
 
-Integration tests run against real database engines via Docker. They are separated from unit tests and use the `*.integration.spec.ts` naming convention.
+Integration specs use `*.integration.spec.ts` and run separately from unit tests. Local database adapters use Docker; cloud adapters require credentials.
+
+The real Monaco entrypoint spec needs neither. See [DEV.md](DEV.md#checks) for its focused command.
 
 ### Running integration tests locally
 
@@ -269,8 +264,8 @@ docker exec sqlui_postgres pg_isready -U postgres
 docker exec sqlui_cassandra_v4 cqlsh -e "DESCRIBE KEYSPACES"
 docker exec sqlui_redis redis-cli ping
 
-# 3. Install dependencies
-npm install
+# 3. Install locked dependencies; review required lifecycle scripts separately
+npm ci --ignore-scripts
 
 # 4. Run all integration tests
 npm run test-integration
@@ -374,8 +369,10 @@ export type Dialect = 'mysql' | 'mariadb' | ... | 'mydb';
 #### Step 2: Install your database driver
 
 ```bash
-npm install your-db-driver
+npm install --save-exact --ignore-scripts your-db-driver
 ```
+
+Review any required lifecycle script before running it separately.
 
 #### Step 3: Create the adapter directory
 
@@ -394,7 +391,7 @@ This class extends `BaseDataAdapter` and implements `IDataAdapter`. You must imp
 | Method                          | Purpose                                                                                                                       |
 | ------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
 | `getConnection()`               | Create and return a connected client instance                                                                                 |
-| `closeConnection(client)`       | Disconnect and clean up the client                                                                                            |
+| `disconnect()`                  | Release adapter resources; the caller invokes this in `finally`, never another adapter method                                 |
 | `authenticate()`                | Quick, lightweight check that the connection is valid and the server is reachable — no extra work beyond testing connectivity |
 | `getDatabases()`                | Return list of databases/keyspaces/namespaces                                                                                 |
 | `getTables(database)`           | Return list of tables/collections in a database                                                                               |
@@ -607,10 +604,6 @@ SOQL returns flat records from a known object; SOSL returns results grouped per 
 
 ## CI / CD Notes
 
-Self hosted runners
+Workflow files own runner selection and gates; do not assume self-hosted runners. See `.github/workflows/build-main.yml` for main/PR builds and `.github/workflows/integration-test.yml` for integration and Rust coverage.
 
-### Windows
-
-```bash
-Set-ExecutionPolicy RemoteSigned
-```
+[DEV.md](DEV.md#coverage-ownership) describes coverage ownership and the remaining reporting-baseline mismatch.

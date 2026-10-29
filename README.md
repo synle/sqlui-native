@@ -26,6 +26,8 @@ Run sqlui-native as a self-contained **web portal** — phpMyAdmin / sqlite-web 
 
 Requires **Node.js 22+** on the host.
 
+**Security:** The portal binds to `0.0.0.0` by default and has no API authentication. Use `--host 127.0.0.1` for local-only access. Session selection is not authorization; do not expose saved credentials on an untrusted network.
+
 ### Quick start (download from a release)
 
 The release ships one `sqlui-portal.tar.gz` that works with both flows:
@@ -49,15 +51,18 @@ npx "https://github.com/synle/sqlui-native/releases/download/v${VERSION}/sqlui-p
 ```bash
 git clone https://github.com/synle/sqlui-native
 cd sqlui-native
-npm install
+npm ci --ignore-scripts
 npm run build:portal
 ```
 
-This produces three files under `dist/portal/`:
+This produces four files under `dist/portal/`:
 
-- `sqlui-portal.js` — the bundled server (~6.6 MB, all deps inlined)
-- `sqlui-portal-assets.json` — embedded React frontend (~22 MB, decoded at runtime)
-- `sqlui-portal` — bash launcher (locates Node and execs the bundle)
+- `sqlui-portal.js` — the bundled server and JavaScript dependencies
+- `sqlui-portal-assets.json` — embedded React frontend, decoded at runtime
+- `sqlui-portal` — bash launcher that locates Node and executes the bundle
+- `package.json` — npm package metadata and the `npx` entrypoint
+
+The build also creates `dist/sqlui-portal-<version>.tar.gz`. It replaces existing portal output; see [build safety](DEV.md#build-configuration-contracts) before rebuilding.
 
 Copy the whole `dist/portal/` directory anywhere; it needs only a system Node.js 22+.
 
@@ -86,7 +91,7 @@ On boot, the portal:
 | Flag                       | Default           | Description                                                                                                              |
 | -------------------------- | ----------------- | ------------------------------------------------------------------------------------------------------------------------ |
 | `--port <n>`               | `19378`           | Listen port. Falls back to a random port if the requested one is busy. `0` = random.                                     |
-| `--host <h>`               | `127.0.0.1`       | Bind host. Use `0.0.0.0` to expose on the LAN.                                                                           |
+| `--host <h>`               | `0.0.0.0`         | Bind host. Use `127.0.0.1` for local-only access and local document files.                                               |
 | `--home-dir <path>`        | `~/.sqlui-portal` | Storage directory override. Highest priority.                                                                            |
 | `--config-path <path>`     | —                 | Alias for `--home-dir`.                                                                                                  |
 | `--use-desktop-storage`    | —                 | Share storage with the desktop app (`~/.sqlui-native`). Connections show up in the desktop app under a "Portal" session. |
@@ -101,7 +106,7 @@ A bare path like `./mydata.sqlite` is auto-resolved to `sqlite:///<absolute-path
 
 ### Storage
 
-Portal mode keeps its data in **`~/.sqlui-portal/`** so it never touches the desktop app's `~/.sqlui-native/` — true regardless of how it's launched (npx, curl-tar, raw `node sqlui-portal.js`).
+Portal storage defaults to **`~/.sqlui-portal/`**, separate from desktop storage at `~/.sqlui-native/`. CLI flags or `SQLUI_HOME_DIR` can override that default, including sharing desktop data.
 
 Override priority (highest first):
 
@@ -120,7 +125,7 @@ Override priority (highest first):
 # Or via env var (handy for shell aliases)
 SQLUI_HOME_DIR=/tmp/work-session ./portal/sqlui-portal ./mydata.sqlite
 
-# Or fully isolated, never persists
+# Separate disposable profile; files persist until you remove the directory
 ./portal/sqlui-portal --home-dir "$(mktemp -d)" ./mydata.sqlite
 ```
 
@@ -263,11 +268,13 @@ Access settings via the menu icon in the top right corner to configure editor pr
 
 ![image](https://user-images.githubusercontent.com/3792401/167707497-82546e72-4a7f-4724-bf1e-8c36836d685d.png)
 
-### SQLite-based Storage
+### Local Application Storage
 
-Application data (connections, queries, sessions, settings, caches) is stored in a single SQLite database file (`sqlui-native-storage.db`) in the app data directory. This makes import/export simpler compared to the previous approach of many individual JSON files.
+Current application storage factories use JSON files for connections, queries, sessions, settings, and caches. Desktop storage defaults to `~/.sqlui-native/`; see [Portal Storage](#storage) for portal overrides.
 
-On first launch after upgrading, existing JSON storage files are automatically migrated into the SQLite database. The original JSON files are moved to a `backup/` subdirectory (not deleted) so you can restore them if needed by moving them back to the parent directory.
+SQLite storage and migration utilities exist, but the normal storage facade still selects JSON. Their presence does not mean startup automatically migrates every profile to SQLite.
+
+See [Metadata and Storage](ARCHITECTURE.md#metadata-and-storage) for implementation ownership. Saved connection strings can contain plaintext credentials; protect profile files and exported connection data.
 
 ### Data Migration
 
@@ -374,7 +381,7 @@ For the full step-by-step guide with code examples, see the [Adding new adapters
 
 ## Roadmap
 
-- [ ] Query autocomplete
+- [x] Context-aware SQL autocomplete for tables and columns
 - [ ] Auto-update
 - [ ] Microsoft Store distribution
 - [ ] AWS Redshift adapter

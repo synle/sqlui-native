@@ -83,7 +83,7 @@ All storage selection must finish before the first storage operation. Import ord
 | `src/sqlui-server/portal.ts`                                        | Portal CLI, storage selection, session bootstrap, single-port hosting                                     |
 | `src-tauri/`                                                        | Rust desktop shell and bundle configuration                                                               |
 | `typings/index.ts`                                                  | Shared data models, dialects, query/result contracts                                                      |
-| `scripts/` and `vite*.config.ts`                                    | Version synchronization, bundling, embedded assets, native resources                                      |
+| `scripts/` and `vite*.config.mts`                                   | Version synchronization, bundling, embedded assets, native resources                                      |
 
 The browser bundle may reach pure modules under `src/common/`, but never Node-backed adapters or storage implementations. Add an endpoint instead of crossing that boundary.
 
@@ -115,6 +115,18 @@ If cancellation is unsupported or fails, the UI can abandon the run and ignore i
 
 Execute failures preserve HTTP 200 and return `ok: false` with `errorKind`. `src/common/utils/errorUtils.ts` classifies errors from driver codes, including cancellation, rather than message matching.
 
+## Local Document Queries
+
+`FileDataAdapter` reads one local JSON, JSONC, YAML/YML, TOML, or XML file through backend-only parsers. Each operation that needs contents reads the file again.
+
+`localAccess.ts` derives access from the runtime's bind host. The adapter checks that gate before reading; network-bound portal mode cannot enable file reads through a connection URI.
+
+`queryParser.ts` evaluates a restricted `res_json`/`display(...)` grammar with query-length and evaluation-step limits. It does not evaluate arbitrary JavaScript; assignments change the in-memory query value, never the source file.
+
+Successful execution returns `raw: [result]` plus `meta.isFileData`, `meta.rawSource`, and `meta.sourceFormat`. `ResultBox/FileDataResultBox.tsx` uses that metadata for formatted output and exact source-text tabs.
+
+See `CONTRIBUTING.md#local-structured-text-file-adapter` for parser ownership, supported operations, size limits, and extension tests.
+
 ## Metadata and Storage
 
 `DataAdapterFactory.ts` serves cached metadata and refreshes stale entries in the background. Refresh work creates its own adapter and disconnects it independently of the foreground caller.
@@ -140,7 +152,9 @@ SQL completion filtering lives in `src/frontend/utils/sqlCompletionContext.ts`:
 
 `monacoSetup.ts` includes editor and JSON workers plus basic-language grammars. TypeScript and HTML language services are intentionally absent; syntax highlighting remains.
 
-`vite.frontend.config.mts` groups vendors and keeps React-core packages together. Its HTML plugin strips `crossorigin` attributes for Tauri protocol compatibility.
+`vite.frontend.helpers.mts` owns vendor grouping and build-target resolution. `vite.frontend.config.mts` calls those helpers and strips HTML `crossorigin` attributes for Tauri protocol compatibility.
+
+React-core packages share one vendor chunk to avoid circular initialization failures. Keep chunk-selection logic in the helper module so tests need not import the full build config.
 
 ## Distribution and Embedded Assets
 

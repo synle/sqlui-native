@@ -37,22 +37,25 @@ Adapters implement `IDataAdapter`; `DataAdapterFactory` selects implementations 
 - Cancellation uses `POST /api/connection/:connectionId/execute/:executionId/cancel`. Unsupported adapters do not gain server-side cancellation from UI abandonment.
 - Execute failures retain HTTP 200 with `{ ok: false, error, errorKind }`. Preserve this compatibility contract; use `errorUtils.ts` for classification.
 
+### Local Document Files
+
+- Keep `FileDataAdapter` read-only and its query language restricted; never replace the evaluator with arbitrary JavaScript execution.
+- Preserve the loopback-bind gate through `configureLocalFileAccess()` and the adapter's read-time check. Network-bound portal mode must fail closed.
+- Preserve the document-size limit, query-length limit, evaluation budget, and filesystem-path redaction. Their constants belong in the adapter and query parser.
+- Preserve `raw: [result]` and `meta.isFileData`, `meta.rawSource`, and `meta.sourceFormat`; the result viewer uses them for separate result/source tabs.
+
 ### Adding an Adapter
 
-1. Add the dialect in `typings/index.ts`.
-2. Implement the adapter using `src/common/adapters/_SampleDataAdapter_/` as the template.
-3. Register implementations in `DataAdapterFactory.ts` and `DataScriptFactory.ts`.
-4. Add a PNG dialect icon, import it in `scripts.ts`, and expose it through `getDialectIcon()`.
-5. Add adapter tests and script cases in `DataScriptFactory.spec.ts`.
+Follow the complete procedure in `CONTRIBUTING.md#adding-new-adapters`, including dialect typing, the sample adapter, both factories, a PNG icon, and adapter/script tests.
 
-`DataScriptFactory.spec.ts` generates `guides.md`; never edit that output manually. Follow `CONTRIBUTING.md` for the full procedure.
+`DataScriptFactory.spec.ts` generates `guides.md`; never edit that output manually.
 
 ## Frontend and Desktop Guardrails
 
 - Keep SQL completion filtering in `src/frontend/utils/sqlCompletionContext.ts`; it is a pure heuristic, not a full SQL parser.
-- `monacoSetup.ts` loads editor and JSON workers. JavaScript/TypeScript and HTML use basic grammars, not their heavyweight language services.
+- `monacoSetup.ts` uses public Monaco ESM entrypoints and loads editor and JSON workers. JavaScript/TypeScript and HTML use basic grammars, not their heavyweight language services.
 - Preserve `AdvancedEditor` lifecycle ownership: apply options in place, dispose providers/listeners, and retain cached models only through the existing model-cache lifecycle.
-- Preserve React-core vendor grouping and `stripCrossoriginPlugin()` in `vite.frontend.config.mts`; splitting React incorrectly can prevent startup.
+- Preserve React-core vendor grouping in `vite.frontend.helpers.mts` and `stripCrossoriginPlugin()` in `vite.frontend.config.mts`; splitting React incorrectly can prevent startup.
 - Preserve Tauri CSP allowances for loopback sidecar requests and GitHub access in `src-tauri/tauri.conf.json`.
 - Keep `dangerousDisableAssetCspModification: ["style-src"]` for MUI/Emotion.
 - Keep the release-only `windows_subsystem = "windows"` attribute on `src-tauri/src/main.rs`, never `lib.rs`.
@@ -60,6 +63,8 @@ Adapters implement `IDataAdapter`; `DataAdapterFactory` selects implementations 
 - Apply Windows `CREATE_NO_WINDOW` (`0x08000000`) to every child spawn, including Node discovery probes.
 - These console controls are Windows-only; do not add equivalent console-hiding branches on macOS or Linux.
 - Preserve the sidecar stdout marker and bounded startup wait. See `ARCHITECTURE.md` for startup and shutdown ownership.
+
+For build-tool or dependency changes, read `DEV.md#build-configuration-contracts` before editing configs or upgrading Monaco/Tauri.
 
 ## Code and Documentation Conventions
 
